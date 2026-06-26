@@ -170,22 +170,21 @@ O diâmetro observado de um asteroide pode ser explicado por variáveis físicas
 
 ::: {.box-gold style="font-size: 0.64em;"}
 
-[**Estrutura dos Dados**]{.underline}
+[**Variáveis numéricas**]{.underline}
 
 ```{r}
 #| results: asis
 estrutura_tab <- resumo_bruto$estrutura |>
+  filter(Tipo == "Numérica") |>
   transmute(
     Variável,
-    Descrição,
-    Tipo,
-    Categorias
+    Descrição
   )
 
 knitr::kable(
   estrutura_tab,
   format = "html",
-  align = "llll",
+  align = "ll",
   caption = "",
   table.attr = 'class="tabela-tema tabela-scroll tabela-tema-destaque1"'
 )
@@ -197,45 +196,70 @@ knitr::kable(
 
 ::::
 
-## Categorias e siglas
+## Variáveis categóricas
 
 :::: {.columns}
 
-::: {.column width="47.5%"}
+::: {.column width="62%"}
 
-::: {.box-gold style="font-size:0.73em;"}
-[**Variáveis categóricas**]{.underline}
+::: {.box-gold style="font-size:0.55em;"}
+[**Estrutura categórica/textual**]{.underline}
 
 ```{r}
-siglas_tab <- tibble::tribble(
-  ~Sigla, ~Significado, ~`Uso na base`,
-  "NEO", "Near-Earth Object", "Objeto próximo da Terra: Sim ou Não",
-  "PHA", "Potentially Hazardous Asteroid", "Potencialmente perigoso: Sim ou Não",
-  "Classe orbital", "Agrupamento dinâmico", "Tipo de órbita do objeto"
-)
+cat_tab <- resumo_bruto$estrutura |>
+  filter(Tipo != "Numérica") |>
+  transmute(
+    Variável,
+    Descrição,
+    Categorias
+  )
 
-knitr::kable(siglas_tab, align = "lll", caption = "")
+knitr::kable(
+  cat_tab,
+  format = "html",
+  align = "lll",
+  caption = "",
+  table.attr = 'class="tabela-tema tabela-scroll tabela-tema-destaque1"'
+)
 ```
 
 :::
 
 :::
 
-::: {.column width="5%"}
+::: {.column width="3%"}
 :::
 
-::: {.column width="47.5%"}
+::: {.column width="35%"}
 
-::: {.box-gold style="font-size:0.73em;"}
-[**Leitura das classes orbitais**]{.underline}
+::: {.box-gold style="font-size:0.66em;"}
+[**Siglas principais**]{.underline}
+
+```{r}
+siglas_tab <- tibble::tribble(
+  ~Sigla, ~Significado,
+  "NEO", "Near-Earth Object: objeto próximo da Terra.",
+  "PHA", "Potentially Hazardous Asteroid: asteroide potencialmente perigoso.",
+  "Classe orbital", "Agrupamento dinâmico pela geometria da órbita."
+)
+
+knitr::kable(siglas_tab, align = "ll", caption = "")
+```
+
+:::
+
+<br>
+
+::: {.box-gold style="font-size:0.64em;"}
+[**Classes orbitais**]{.underline}
 
 ```{r}
 classes_exp <- tibble::tribble(
   ~Grupo, ~Interpretação,
-  "Cinturão principal", "Objetos entre Marte e Júpiter, incluindo regiões interna, central e externa.",
-  "Próximos da Terra", "Apollo, Amor e Aten, separados pela geometria da órbita em relação à Terra.",
-  "Cruzadores de Marte", "Órbitas que cruzam ou se aproximam da órbita marciana.",
-  "Regiões externas", "Transnetunianos, centauros e outros grupos menos frequentes."
+  "Cinturão principal", "Entre Marte e Júpiter.",
+  "Próximos da Terra", "Apollo, Amor e Aten.",
+  "Cruzadores de Marte", "Próximos da órbita marciana.",
+  "Regiões externas", "Transnetunianos e outros."
 )
 
 knitr::kable(classes_exp, align = "ll", caption = "")
