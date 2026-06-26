@@ -42,6 +42,9 @@ df_modelo <- obj$dados_modelo
 df_plot <- obj$amostra_plot
 boxcox_df <- obj$boxcox
 tabela_subconjuntos <- obj$selecoes$subconjuntos
+tabela_metodos <- obj$selecoes$metodos
+tabela_lasso <- obj$selecoes$lasso
+tabela_fiv <- obj$selecoes$fiv
 
 modelo <- lm(log_diametro ~ magnitude_absoluta + log_albedo, data = df_modelo)
 
@@ -175,16 +178,67 @@ estrutura_tab <- resumo_bruto$estrutura |>
   transmute(
     Variável,
     Descrição,
-    Tipo
+    Tipo,
+    Categorias
   )
 
 knitr::kable(
   estrutura_tab,
   format = "html",
-  align = "lll",
+  align = "llll",
   caption = "",
   table.attr = 'class="tabela-tema tabela-scroll tabela-tema-destaque1"'
 )
+```
+
+:::
+
+:::
+
+::::
+
+## Categorias e siglas
+
+:::: {.columns}
+
+::: {.column width="47.5%"}
+
+::: {.box-gold style="font-size:0.73em;"}
+[**Variáveis categóricas**]{.underline}
+
+```{r}
+siglas_tab <- tibble::tribble(
+  ~Sigla, ~Significado, ~`Uso na base`,
+  "NEO", "Near-Earth Object", "Objeto próximo da Terra: Sim ou Não",
+  "PHA", "Potentially Hazardous Asteroid", "Potencialmente perigoso: Sim ou Não",
+  "Classe orbital", "Agrupamento dinâmico", "Tipo de órbita do objeto"
+)
+
+knitr::kable(siglas_tab, align = "lll", caption = "")
+```
+
+:::
+
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="47.5%"}
+
+::: {.box-gold style="font-size:0.73em;"}
+[**Leitura das classes orbitais**]{.underline}
+
+```{r}
+classes_exp <- tibble::tribble(
+  ~Grupo, ~Interpretação,
+  "Cinturão principal", "Objetos entre Marte e Júpiter, incluindo regiões interna, central e externa.",
+  "Próximos da Terra", "Apollo, Amor e Aten, separados pela geometria da órbita em relação à Terra.",
+  "Cruzadores de Marte", "Órbitas que cruzam ou se aproximam da órbita marciana.",
+  "Regiões externas", "Transnetunianos, centauros e outros grupos menos frequentes."
+)
+
+knitr::kable(classes_exp, align = "ll", caption = "")
 ```
 
 :::
@@ -383,12 +437,13 @@ ggplot(df_albedo_inicial, aes(x = valor, y = diametro_km)) +
 
 :::: {.columns}
 
-::: {.column width="64%"}
+::: {.column width="68%"}
 
 ```{r}
 #| fig-align: center
 #| out-width: "100%"
-#| out-height: "80%"
+#| out-height: "92%"
+#| fig-height: 5.4
 lambda_otimo <- obj$resumo_modelo$lambda_boxcox
 
 ggplot(boxcox_df, aes(x = lambda, y = log_verossimilhanca)) +
@@ -403,17 +458,35 @@ ggplot(boxcox_df, aes(x = lambda, y = log_verossimilhanca)) +
 
 :::
 
-::: {.column width="4%"}
+::: {.column width="3%"}
 :::
 
-::: {.column width="32%"}
+::: {.column width="29%"}
 
-::: {.box-gold style="font-size:0.76em;"}
+::: {.box-gold style="font-size:0.73em;"}
 [**Da escala original ao log**]{.underline}
 
 - O primeiro ajuste considera `diâmetro_km`.
 - A curva Box-Cox atinge máximo em `r fmt_num(lambda_otimo, 2)`.
 - Com lambda próximo de zero, a etapa seguinte usa `log(diâmetro_km)`.
+
+:::
+
+<br>
+
+::: {.box-gold style="font-size:0.68em;"}
+
+```{r}
+boxcox_tab <- tibble::tribble(
+  ~Etapa, ~Leitura,
+  "Resposta", "Diâmetro em km",
+  "Preditores", "Magnitude, albedo e órbita",
+  "Lambda", fmt_num(lambda_otimo, 2),
+  "Escala seguinte", "log(diâmetro em km)"
+)
+
+knitr::kable(boxcox_tab, align = "ll", caption = "")
+```
 
 :::
 
@@ -522,7 +595,7 @@ p2 <- ggplot(df_flags, aes(x = classe, y = log_diametro)) +
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
-## Seleção de variáveis
+## Seleção: subconjuntos
 
 :::: {.columns}
 
@@ -552,16 +625,130 @@ knitr::kable(sel_tab, align = "cclc", caption = "")
 ::: {.box-gold style="font-size:0.74em;"}
 [**Leitura do processo**]{.underline}
 
-- O primeiro preditor selecionado é a magnitude absoluta.
+- O primeiro ganho vem da magnitude absoluta.
 - Com dois preditores entra `log(albedo)`.
-- Variáveis orbitais melhoram pouco o ajuste.
-- O modelo final privilegia parcimônia e interpretação física.
+- A terceira variável acrescenta informação orbital.
+- Depois disso, o ganho marginal fica pequeno.
 
 :::
 
 :::
 
 ::::
+
+## Seleção: AIC, BIC e p-valor
+
+:::: {.columns}
+
+::: {.column width="49%"}
+
+::: {.box-gold style="font-size:0.60em;"}
+
+```{r}
+criterios_tab <- tabela_metodos |>
+  filter(Método != "LASSO 1-SE") |>
+  transmute(
+    Método,
+    Termos,
+    AIC = fmt_num(AIC, 1),
+    BIC = fmt_num(BIC, 1),
+    `R² ajustado` = fmt_num(`R² ajustado`, 4)
+  )
+
+knitr::kable(criterios_tab, align = "lcccc", caption = "")
+```
+
+:::
+
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="48%"}
+
+::: {.box-gold style="font-size:0.56em;"}
+
+```{r}
+preditores_tab <- tabela_metodos |>
+  filter(Método != "LASSO 1-SE") |>
+  transmute(
+    Método,
+    `Preditores mantidos`
+  )
+
+knitr::kable(preditores_tab, align = "ll", caption = "")
+```
+
+:::
+
+:::
+
+::::
+
+::: {.box-gold style="font-size:0.66em; margin-top:0.55em;"}
+
+<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:0.55em;">
+  <div><b>Forward</b><br>começa no intercepto e adiciona o melhor termo.</div>
+  <div><b>Backward</b><br>começa no modelo cheio e remove termos.</div>
+  <div><b>Stepwise</b><br>permite entrada e saída a cada etapa.</div>
+  <div><b>p-valor</b><br>remove o maior p acima de 5%; aqui nenhum saiu.</div>
+</div>
+
+:::
+
+## Seleção: LASSO e FIV
+
+:::: {.columns}
+
+::: {.column width="49%"}
+
+::: {.box-gold style="font-size:0.60em;"}
+[**LASSO**]{.underline}
+
+```{r}
+lasso_tab <- tabela_lasso |>
+  slice_head(n = 8) |>
+  transmute(
+    Variável,
+    `|coef.|` = fmt_num(`Coeficiente máximo em módulo`, 4),
+    `Termos` = `Termos não nulos`
+  )
+
+knitr::kable(lasso_tab, align = "lcc", caption = "")
+```
+
+:::
+
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="48%"}
+
+::: {.box-gold style="font-size:0.60em;"}
+[**FIV no bloco numérico**]{.underline}
+
+```{r}
+fiv_tab <- tabela_fiv |>
+  slice_head(n = 9) |>
+  mutate(`FIV ajustado` = fmt_num(`FIV ajustado`, 2))
+
+knitr::kable(fiv_tab, align = "lc", caption = "")
+```
+
+:::
+
+:::
+
+::::
+
+::: {.box-gold style="font-size:0.70em; margin-top:0.4em;"}
+
+Os critérios automáticos tendem a aceitar mais variáveis porque a amostra é grande. Para interpretação, a leitura principal fica na dupla física mais estável: magnitude absoluta e `log(albedo)`.
+
+:::
 
 ## O modelo
 
