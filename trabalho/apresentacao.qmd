@@ -71,16 +71,16 @@ fmt_pct <- function(x) paste0(format(round(x, 2), decimal.mark = ","), "%")
 fmt_num <- function(x, digits = 4) format(round(x, digits), decimal.mark = ",", nsmall = digits)
 ```
 
-# Introdução
+# Pergunta
 
-## Introdução {style="font-size: 0.9em;"}
+## Um ponto brilhante é grande ou só reflete muita luz? {style="font-size: 0.82em;"}
 
 :::: {.columns}
 
 ::: {.column width="47.5%"}
 
 ::: {.box-gold style="font-size: 0.75em;"}
-[**O que são asteroides?**]{.underline}
+[**Por que asteroides?**]{.underline}
 
 - Pequenos corpos rochosos que orbitam o Sol.
 - Muitos se concentram no cinturão principal, entre Marte e Júpiter.
@@ -93,10 +93,10 @@ fmt_num <- function(x, digits = 4) format(round(x, digits), decimal.mark = ",", 
 ::: {.box-gold style="font-size: 0.75em;"}
 [**Relevância**]{.underline}
 
-- Preservam material remanescente da formação do Sistema Solar interno.
+- Guardam pistas antigas sobre a formação do Sistema Solar.
 - Estão associados à origem de muitos meteoritos.
 - Alguns objetos podem representar risco de impacto.
-- Também são fontes potenciais de minerais e voláteis.
+- Também interessam pela composição: metais, gelo e outros materiais.
 
 :::
 
@@ -108,15 +108,15 @@ fmt_num <- function(x, digits = 4) format(round(x, digits), decimal.mark = ",", 
 ::: {.column width="47.5%"}
 
 ::: {.box-gold style="font-size: 0.72em;"}
-[**Questão estatística**]{.underline}
+[**Pergunta do trabalho**]{.underline}
 
-O diâmetro observado de um asteroide pode ser explicado por variáveis físicas e orbitais registradas pelo JPL?
+Quando conhecemos brilho, refletividade e órbita, quanto conseguimos recuperar do tamanho real de um asteroide?
 
 <br>
 
 <div style="font-size:1.05em; text-align:center;">
 <code class="blue">diâmetro_km</code><br>
-<span style="color:#cbd5e1;">avaliado a partir de</span><br>
+<span style="color:#cbd5e1;">explicado a partir de</span><br>
 <code class="navy">magnitude</code>
 <code class="navy">albedo</code>
 <code class="navy">órbita</code>
@@ -129,35 +129,35 @@ O diâmetro observado de um asteroide pode ser explicado por variáveis físicas
 
 ::::
 
-# Material
+# Dados
 
-## Os dados
+## De 1,55 milhão a 138 mil casos modeláveis
 
 :::: {.columns}
 
 ::: {.column width="43%"}
 
 ::: {.box-gold style="font-size: 0.69em;"}
-[**Origem dos Dados**]{.underline}
+[**De onde vieram os dados**]{.underline}
 
 - Base JPL Small-Body Database.
 - Consulta pública via SBDB Query API.
-- Registros de pequenos corpos com variáveis físicas, orbitais e classificatórias.
+- Medidas físicas, informações orbitais e classificações mantidas pelo JPL.
 
 :::
 
 <br>
 
-::: {.box-gold style="font-size: 0.77em;"}
-[**Composição**]{.underline}
+::: {.box-gold style="font-size: 0.70em;"}
+[**Recorte da análise**]{.underline}
 
-- Observações: `r fmt_int(resumo_bruto$n_total)` asteroides;
-- Variáveis: `r resumo_bruto$n_variaveis` colunas;
-  - Numéricas: `r resumo_bruto$n_numericas`;
-  - Categóricas/texto: `r resumo_bruto$n_categoricas`;
-- Objetos próximos da Terra: `r fmt_int(resumo_bruto$n_neo)`;
-- Potencialmente perigosos: `r fmt_int(resumo_bruto$n_pha)`;
-- Casos completos para modelagem: `r fmt_int(obj$resumo_modelo$n_modelo)`.
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.72em 0.85em; margin-top:0.55em;">
+  <div><strong style="font-size:1.35em; color:#7dd3fc;">`r fmt_int(resumo_bruto$n_total)`</strong><br><span style="color:#cbd5e1;">asteroides</span></div>
+  <div><strong style="font-size:1.35em; color:#7dd3fc;">`r resumo_bruto$n_variaveis`</strong><br><span style="color:#cbd5e1;">variáveis: `r resumo_bruto$n_numericas` numéricas e `r resumo_bruto$n_categoricas` categóricas</span></div>
+  <div><strong style="font-size:1.35em; color:#7dd3fc;">`r fmt_int(resumo_bruto$n_neo)`</strong><br><span style="color:#cbd5e1;">próximos da Terra</span></div>
+  <div><strong style="font-size:1.35em; color:#7dd3fc;">`r fmt_int(resumo_bruto$n_pha)`</strong><br><span style="color:#cbd5e1;">potencialmente perigosos</span></div>
+  <div style="grid-column:1 / -1;"><strong style="font-size:1.42em; color:#7dd3fc;">`r fmt_int(obj$resumo_modelo$n_modelo)`</strong><br><span style="color:#cbd5e1;">casos completos para o modelo (`r fmt_pct(100 * obj$resumo_modelo$n_modelo / resumo_bruto$n_total)` da base)</span></div>
+</div>
 
 :::
 
@@ -196,7 +196,7 @@ knitr::kable(
 
 ::::
 
-## Variáveis categóricas
+## Classes, siglas e grupos orbitais
 
 :::: {.columns}
 
@@ -271,17 +271,17 @@ knitr::kable(classes_exp, align = "ll", caption = "")
 
 ::::
 
-# Metodologia
+# Caminho
 
-## Metodologia
+## Da pergunta ao modelo final
 
 :::: {.columns}
 
 ::: {.column width="22%"}
 :::{.box-copper style="text-align:center;"}
 <div style="font-size:2em; font-weight:800; color:#7dd3fc;">1</div>
-<div style="font-weight:700; margin-bottom:0.4em;">Exploração</div>
-<div style="font-size:0.70em; color:#cbd5e1;">NAs, categorias e dispersões</div>
+<div style="font-weight:700; margin-bottom:0.4em;">Base</div>
+<div style="font-size:0.70em; color:#cbd5e1;">o que existe, o que falta e quais grupos aparecem</div>
 :::
 :::
 
@@ -292,8 +292,8 @@ knitr::kable(classes_exp, align = "ll", caption = "")
 ::: {.column width="22%"}
 :::{.box-copper style="text-align:center;"}
 <div style="font-size:2em; font-weight:800; color:#7dd3fc;">2</div>
-<div style="font-weight:700; margin-bottom:0.4em;">Resposta</div>
-<div style="font-size:0.70em; color:#cbd5e1;">diâmetro na escala original</div>
+<div style="font-weight:700; margin-bottom:0.4em;">Primeiro ajuste</div>
+<div style="font-size:0.70em; color:#cbd5e1;">o diâmetro entra em km, sem começar pelo log</div>
 :::
 :::
 
@@ -304,8 +304,8 @@ knitr::kable(classes_exp, align = "ll", caption = "")
 ::: {.column width="22%"}
 :::{.box-copper style="text-align:center;"}
 <div style="font-size:2em; font-weight:800; color:#7dd3fc;">3</div>
-<div style="font-weight:700; margin-bottom:0.4em;">Box-Cox</div>
-<div style="font-size:0.70em; color:#cbd5e1;">diagnóstico da resposta</div>
+<div style="font-weight:700; margin-bottom:0.4em;">Transformação</div>
+<div style="font-size:0.70em; color:#cbd5e1;">Box-Cox indica uma escala mais estável</div>
 :::
 :::
 
@@ -316,8 +316,8 @@ knitr::kable(classes_exp, align = "ll", caption = "")
 ::: {.column width="22%"}
 :::{.box-copper style="text-align:center;"}
 <div style="font-size:2em; font-weight:800; color:#7dd3fc;">4</div>
-<div style="font-weight:700; margin-bottom:0.4em;">Diagnóstico</div>
-<div style="font-size:0.70em; color:#cbd5e1;">seleção, resíduos e influência</div>
+<div style="font-weight:700; margin-bottom:0.4em;">Escolha</div>
+<div style="font-size:0.70em; color:#cbd5e1;">explicar bem sem perder leitura</div>
 :::
 :::
 
@@ -330,7 +330,11 @@ knitr::kable(classes_exp, align = "ll", caption = "")
 ::: {.column width="62%"}
 :::{.box-gold style="text-align:center; font-size:0.73em;"}
 
-**Blocos considerados**
+**Fio condutor**
+
+<div style="font-size:0.90em; margin-bottom:0.55em; color:#cbd5e1;">
+Começar pelas variáveis fisicamente ligadas ao diâmetro e, depois, testar quanto órbita e classe ainda acrescentam.
+</div>
 
 <div style="display:flex; flex-wrap:wrap; gap:0.35em; justify-content:center; margin-top:0.45em;">
   <code class="navy">magnitude</code>
@@ -357,7 +361,7 @@ knitr::kable(classes_exp, align = "ll", caption = "")
 ::: {.column width="31%"}
 :::{.box-gold style="text-align:center; font-size:0.78em;"}
 
-**Resposta inicial**
+**Ponto de partida**
 
 <code class="blue">diâmetro_km</code>
 
@@ -368,7 +372,7 @@ knitr::kable(classes_exp, align = "ll", caption = "")
 
 # Exploração
 
-## NAs & Categorias
+## O modelo nasce de uma base grande, mas incompleta
 
 :::: {.columns}
 
@@ -418,7 +422,7 @@ knitr::kable(classe_tab, align = "cc", caption = "")
 
 ::::
 
-## diâmetro X magnitude
+## Na escala original, magnitude já organiza o tamanho
 
 ```{r}
 #| fig-align: center
@@ -433,7 +437,7 @@ ggplot(df_plot, aes(x = magnitude_absoluta, y = diametro_km)) +
   tema_asteroides()
 ```
 
-## diâmetro X albedo
+## O albedo também pede cuidado de escala
 
 ```{r}
 #| fig-align: center
@@ -457,7 +461,7 @@ ggplot(df_albedo_inicial, aes(x = valor, y = diametro_km)) +
   tema_asteroides()
 ```
 
-## Box-Cox
+## Box-Cox favorece o uso de log
 
 :::: {.columns}
 
@@ -476,7 +480,10 @@ ggplot(boxcox_df, aes(x = lambda, y = log_verossimilhanca)) +
              linetype = "dashed", linewidth = 1) +
   geom_vline(xintercept = 0, color = "#bfdbfe",
              linetype = "dotted", linewidth = 0.9) +
-  labs(x = "Lambda", y = "Log-verossimilhança") +
+  scale_y_continuous(
+    labels = scales::label_number(scale = 1e-5, accuracy = 0.1, decimal.mark = ",")
+  ) +
+  labs(x = "Lambda", y = "Log-verossimilhança (×10⁵)") +
   tema_asteroides()
 ```
 
@@ -490,9 +497,9 @@ ggplot(boxcox_df, aes(x = lambda, y = log_verossimilhanca)) +
 ::: {.box-gold style="font-size:0.73em;"}
 [**Da escala original ao log**]{.underline}
 
-- O primeiro ajuste considera `diâmetro_km`.
-- A curva Box-Cox atinge máximo em `r fmt_num(lambda_otimo, 2)`.
-- Com lambda próximo de zero, a etapa seguinte usa `log(diâmetro_km)`.
+- O primeiro ajuste usa o diâmetro em km.
+- O Box-Cox atinge máximo perto de `r fmt_num(lambda_otimo, 2)`.
+- Lambda perto de zero aponta para `log(diâmetro_km)`.
 
 :::
 
@@ -518,7 +525,7 @@ knitr::kable(boxcox_tab, align = "ll", caption = "")
 
 ::::
 
-## magnitude X log(diâmetro)
+## Com log, magnitude fica quase linear
 
 ```{r}
 #| fig-align: center
@@ -531,7 +538,7 @@ ggplot(df_plot, aes(x = magnitude_absoluta, y = log_diametro)) +
   tema_asteroides()
 ```
 
-## albedo X log(diâmetro)
+## No log, a relação com albedo fica mais clara
 
 ```{r}
 #| fig-align: center
@@ -553,7 +560,7 @@ ggplot(df_albedo_facet, aes(x = valor, y = log_diametro)) +
   tema_asteroides()
 ```
 
-## órbita X log(diâmetro)
+## Órbita acrescenta informação, mas não domina
 
 ```{r}
 #| fig-align: center
@@ -578,7 +585,7 @@ ggplot(df_orbita, aes(x = valor, y = log_diametro)) +
   tema_asteroides(base_size = 12)
 ```
 
-## classe e risco X log(diâmetro)
+## Classe e risco mudam grupos, não substituem brilho
 
 ```{r}
 #| fig-align: center
@@ -619,7 +626,9 @@ p2 <- ggplot(df_flags, aes(x = classe, y = log_diametro)) +
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
-## Seleção: subconjuntos
+# Escolha do modelo
+
+## O maior salto vem de duas variáveis
 
 :::: {.columns}
 
@@ -647,12 +656,12 @@ knitr::kable(sel_tab, align = "cclc", caption = "")
 ::: {.column width="38%"}
 
 ::: {.box-gold style="font-size:0.74em;"}
-[**Leitura do processo**]{.underline}
+[**Decisão estatística**]{.underline}
 
-- O primeiro ganho vem da magnitude absoluta.
-- Com dois preditores entra `log(albedo)`.
-- A terceira variável acrescenta informação orbital.
-- Depois disso, o ganho marginal fica pequeno.
+- A magnitude absoluta já explica boa parte da variação do diâmetro.
+- `log(albedo)` é o acréscimo que mais muda o ajuste.
+- Termos orbitais aumentam pouco o R² ajustado, embora ajudem AIC e BIC.
+- O modelo final é escolhido por parcimônia e interpretação.
 
 :::
 
@@ -660,7 +669,7 @@ knitr::kable(sel_tab, align = "cclc", caption = "")
 
 ::::
 
-## Seleção: AIC, BIC e p-valor
+## Critérios automáticos preferem 9 ou mais termos
 
 :::: {.columns}
 
@@ -721,7 +730,13 @@ knitr::kable(preditores_tab, align = "ll", caption = "")
 
 :::
 
-## Seleção: LASSO e FIV
+::: {.box-decision style="font-size:0.67em; margin-top:0.65em; text-align:center;"}
+
+**Ponto comum:** todos os métodos mantêm magnitude absoluta e `log(albedo)`; as diferenças aparecem nos termos adicionais.
+
+:::
+
+## LASSO e FIV ajudam a separar sinal de excesso
 
 :::: {.columns}
 
@@ -770,48 +785,80 @@ knitr::kable(fiv_tab, align = "lc", caption = "")
 
 ::: {.box-gold style="font-size:0.70em; margin-top:0.4em;"}
 
-Os critérios automáticos tendem a aceitar mais variáveis porque a amostra é grande. Para interpretação, a leitura principal fica na dupla física mais estável: magnitude absoluta e `log(albedo)`.
+Com `r fmt_int(obj$resumo_modelo$n_modelo)` casos, até ganhos pequenos aparecem nos critérios. Para interpretar o fenômeno, o modelo final foi escolhido por parcimônia: magnitude absoluta + `log(albedo)`.
 
 :::
 
-## O modelo
+# Modelo final
 
-```{r}
-#| echo: true
-modelo <- lm(
-  log_diametro ~ magnitude_absoluta + log_albedo,
-  data = df_modelo
-)
-```
+## Duas variáveis recuperam quase todo o ajuste
+
+::: {.box-decision style="text-align:center; font-size:0.76em; margin-bottom:0.75em;"}
+[**Modelo escolhido por parcimônia**]{.underline}
+
+<div style="font-size:1.16em; margin:0.45em 0 0.25em;">
+<code class="blue">log(diâmetro_km)</code> =
+β₀ + β₁ <code class="navy">magnitude absoluta</code> +
+β₂ <code class="navy">log(albedo)</code> + ε
+</div>
+
+<div style="color:#cbd5e1;"><code class="blue">lm(log_diametro ~ magnitude_absoluta + log_albedo)</code></div>
+:::
 
 :::: {.columns}
 
-::: {.column width="52%"}
+::: {.column width="38%"}
 
-```{r}
-#| echo: true
-#| class-output: scroll-output
-summary(modelo)
-```
+::: {.box-gold style="font-size:0.72em; text-align:center;"}
+[**Resumo do ajuste**]{.underline}
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.55em; margin:0.75em 0;">
+  <div><strong style="font-size:2em; color:#7dd3fc;">`r fmt_num(summary(modelo)$adj.r.squared)`</strong><br>R² ajustado</div>
+  <div><strong style="font-size:2em; color:#7dd3fc;">`r fmt_num(max(car::vif(modelo)), 2)`</strong><br>FIV máximo</div>
+</div>
+
+`r fmt_int(obj$resumo_modelo$n_modelo)` casos completos.
+
+:::
 
 :::
 
 ::: {.column width="4%"}
 :::
 
-::: {.column width="44%"}
+::: {.column width="58%"}
+
+::: {.box-gold style="font-size:0.69em;"}
+[**Coeficientes principais**]{.underline}
 
 ```{r}
-#| echo: true
-anova(modelo)
-car::vif(modelo)
+coef_tab <- as.data.frame(coef(summary(modelo))) |>
+  rownames_to_column("Termo") |>
+  filter(Termo != "(Intercept)") |>
+  transmute(
+    Termo = dplyr::recode(
+      Termo,
+      "magnitude_absoluta" = "Magnitude absoluta",
+      "log_albedo" = "log(albedo)"
+    ),
+    Estimativa = fmt_num(Estimate, 4),
+    `p-valor` = if_else(`Pr(>|t|)` < 0.001, "< 0,001", fmt_num(`Pr(>|t|)`, 4))
+  )
+
+knitr::kable(coef_tab, align = "lcc", caption = "")
 ```
+
+Os sinais recuperam a relação física esperada: maior brilho indica maior diâmetro estimado; menor albedo também.
+
+:::
 
 :::
 
 ::::
 
-## Resíduos Studentizados
+# Diagnóstico
+
+## Resíduos mostram onde a relação é menos regular
 
 ```{r}
 #| fig-align: center
@@ -845,7 +892,7 @@ ggplot(df_diag, aes(x = fitted, y = rstud)) +
   tema_asteroides()
 ```
 
-## QQ-plot
+## O centro acompanha a reta, mas as caudas escapam
 
 ```{r}
 #| fig-align: center
@@ -862,7 +909,7 @@ ggplot(
   tema_asteroides()
 ```
 
-## Alavanca & Influência
+## Leverage e Cook localizam observações influentes
 
 ```{r}
 #| fig-align: center
@@ -898,7 +945,7 @@ ggplot(df_diag, aes(x = h, y = rstud)) +
 
 # Conclusão
 
-## Conclusão
+## Relação forte no subconjunto completo
 
 ```{r}
 bp <- bptest(modelo)
@@ -907,19 +954,25 @@ sh_idx <- unique(round(seq(1, length(residuals(modelo)), length.out = 5000)))
 sh <- shapiro.test(residuals(modelo)[sh_idx])
 ```
 
+::: {.box-decision style="font-size:0.76em; margin-bottom:0.7em;"}
+
+Na escala logarítmica, magnitude e albedo explicam cerca de `r fmt_num(100 * summary(modelo)$adj.r.squared, 1)`% da variação do diâmetro entre asteroides com dados físicos completos no JPL. O ajuste é forte, mas os resíduos mostram que a base reúne objetos muito diferentes.
+
+:::
+
 :::: {.columns}
 
 ::: {.column width="48%"}
 
-::: {.box-gold style="font-size:0.78em;"}
+::: {.box-gold style="font-size:0.76em;"}
 
-[**Modelo final**]{.underline}
+[**O que fica de pé**]{.underline}
 
-- Resposta final: `log(diâmetro_km)`;
-- Preditores: magnitude absoluta e `log(albedo)`;
+- Resposta modelada: `log(diâmetro_km)`;
+- Preditores mantidos: magnitude absoluta e `log(albedo)`;
 - R² ajustado: `r fmt_num(summary(modelo)$adj.r.squared)`;
 - FIV máximo: `r fmt_num(max(car::vif(modelo)), 2)`;
-- O sinal dos coeficientes segue a relação física esperada.
+- Modelo descritivo, escolhido por parcimônia.
 
 :::
 
@@ -930,14 +983,14 @@ sh <- shapiro.test(residuals(modelo)[sh_idx])
 
 ::: {.column width="48%"}
 
-::: {.box-gold style="font-size:0.78em;"}
+::: {.box-limit style="font-size:0.76em;"}
 
-[**Diagnóstico**]{.underline}
+[**Onde ter cautela**]{.underline}
 
-- Box-Cox parte do diâmetro bruto e aponta lambda `r fmt_num(obj$resumo_modelo$lambda_boxcox, 2)`;
+- Box-Cox apontou lambda `r fmt_num(obj$resumo_modelo$lambda_boxcox, 2)`, mas o log não resolve tudo;
 - Breusch-Pagan: p-valor `< 0,001`;
-- Durbin-Watson: `r fmt_num(unname(dw$statistic), 3)`;
 - Shapiro-Wilk: p-valor `< 0,001`;
+- Durbin-Watson: `r fmt_num(unname(dw$statistic), 3)`, com interpretação limitada sem ordem temporal;
 - O QQ-plot indica caudas mais pesadas que a normal.
 
 :::

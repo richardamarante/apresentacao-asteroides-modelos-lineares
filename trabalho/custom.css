@@ -11,6 +11,9 @@
 .reveal .slides {
   text-align: left;
 }
+.reveal .slides section.level2 {
+  background-color: #08111f;
+}
 
 /* ==== Slide de título ==== */
 #title-slide {
@@ -154,6 +157,20 @@
   padding: 0.78em 0.95em;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.30);
+}
+.box-decision {
+  border-left: 8px solid #14b8a6;
+  background: rgba(20, 184, 166, 0.13);
+  padding: 0.72em 0.88em;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32);
+}
+.box-limit {
+  border-left: 8px solid #f87171;
+  background: rgba(248, 113, 113, 0.11);
+  padding: 0.72em 0.88em;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32);
 }
 
 /* ===== Destaques ===== */
@@ -309,6 +326,44 @@
 }
 
 /* ===== code ===== */
+.reveal div.sourceCode,
+.reveal pre.sourceCode,
+.reveal pre {
+  background: #071323 !important;
+  border: 1px solid rgba(56, 189, 248, 0.42);
+  border-radius: 6px;
+  box-shadow: none;
+}
+.reveal pre code {
+  background: transparent !important;
+  color: #dbeafe;
+  text-shadow: none;
+  font-size: 0.72em;
+  line-height: 1.28;
+}
+.reveal div.sourceCode pre {
+  margin: 0;
+  padding: 0.55em 0.75em;
+}
+.reveal .code-copy-button {
+  display: none;
+}
+.reveal code.sourceCode span {
+  color: #dbeafe !important;
+}
+.reveal code.sourceCode span.fu {
+  color: #7dd3fc !important;
+}
+.reveal code.sourceCode span.ot,
+.reveal code.sourceCode span.at {
+  color: #a7f3d0 !important;
+}
+.reveal code.sourceCode span.sc {
+  color: #93c5fd !important;
+}
+.reveal pre.numberSource code > span > a:first-child::before {
+  color: rgba(203, 213, 225, 0.50);
+}
 code.copper,
 code.navy {
   background: rgba(29, 78, 216, 0.18);
