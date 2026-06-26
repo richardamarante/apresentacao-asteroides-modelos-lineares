@@ -1,20 +1,28 @@
-# Modelagem do Diâmetro de Asteroides
+<div align="center">
 
-Apresentação em Quarto/RevealJS para a disciplina de Modelos Lineares.
+  <h1>☄️ Modelagem do Diâmetro de Asteroides</h1>
 
-O trabalho estuda a relação entre o diâmetro observado de asteroides, a magnitude absoluta `H` e o albedo, usando um modelo linear múltiplo com a resposta em escala logarítmica.
+  <p>
+    Modelagem estatística para investigar quais características físicas e orbitais<br>
+    explicam o diâmetro observado de asteroides.
+  </p>
 
-## Arquivos principais
+  <a href="https://richardamarante.github.io/apresentacao-asteroides-modelos-lineares/trabalho/index.html#/title-slide">
+    <img src="https://img.shields.io/badge/▶  Ver%20Apresentação-38BDF8?style=for-the-badge&logoColor=black" alt="Ver Apresentação"/>
+  </a>
 
-- `trabalho/apresentacao.qmd`: slides da apresentação.
-- `trabalho/custom.css`: identidade visual dos slides.
-- `trabalho/data/asteroides_modelo.rds`: base tratada usada nos gráficos e no modelo.
-- `docs/trabalho/index.html`: apresentação renderizada para publicação.
+  <br/><br/>
 
-## Renderização
+  <img src="https://img.shields.io/badge/R-276DC3?style=flat-square&logo=r&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Quarto-75AADB?style=flat-square&logo=quarto&logoColor=white"/>
+  <img src="https://img.shields.io/badge/JPL%20SBDB-0EA5E9?style=flat-square&logoColor=white"/>
 
-```bash
-quarto render
-```
+</div>
 
-Autor: Richard Amarante.
+---
+
+Trabalho desenvolvido para a disciplina **Modelos de Regressão** da Universidade Federal Fluminense.
+A base de dados é composta por **1.552.892 asteroides** obtidos a partir do **JPL Small-Body Database**,
+e a variável resposta analisada é o `diâmetro_km`.
+
+**Autor:** Richard Amarante

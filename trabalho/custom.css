@@ -1,9 +1,9 @@
 /* ===== Base ===== */
 .reveal {
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
-  font-size: 30px;
-  background-color: #0B1020;
-  color: #E5E7EB;
+  font-size: 28px;
+  background-color: #08111f;
+  color: #e8f4ff;
 }
 .reveal .slides section li {
   text-align: left;
@@ -13,148 +13,155 @@
 }
 
 /* ==== Slide de título ==== */
-#title-slide {
-  background:
-    linear-gradient(90deg, rgba(3, 7, 18, 0.86), rgba(3, 7, 18, 0.58), rgba(3, 7, 18, 0.24)),
-    url("media/capa_asteroides.jpg");
-  background-size: cover;
-  background-position: center;
-}
 #title-slide .title {
-  color: #F8FAFC;
-  font-size: 2.15em;
+  color: #f8fbff;
+  font-size: 2.12em;
   font-weight: 800;
-  transform: translateY(10px);
-  line-height: 1.12;
-  max-width: 850px;
+  transform: translateY(8px);
+  line-height: 1.16;
+  max-width: 900px;
 }
 #title-slide .subtitle {
-  color: #38BDF8;
-  font-size: 1.15em;
-  font-weight: 400;
+  color: #7dd3fc;
+  font-size: 1.14em;
+  font-weight: 350;
   margin-top: 0.4em;
 }
 #title-slide .author {
-  color: #CBD5E1;
-  font-size: 0.70em;
+  color: #cbd5e1;
+  font-size: 0.68em;
   margin-top: 1em;
 }
 #title-slide .institute {
-  color: #CBD5E1;
-  font-size: 0.58em;
+  color: #cbd5e1;
+  font-size: 0.56em;
   font-style: italic;
 }
 #title-slide .date {
-  color: #94A3B8;
-  font-size: 0.55em;
+  color: #93c5fd;
+  font-size: 0.54em;
   transform: translateY(-10px);
 }
 
 /* ===== Títulos ===== */
 .reveal h1 {
-  font-size: 2.35em;
+  font-size: 2.32em;
   font-weight: 800;
-  color: #F59E0B;
+  color: #7dd3fc;
 }
 .reveal h2 {
-  font-size: 1.65em;
+  font-size: 1.62em;
   font-weight: 700;
-  color: #38BDF8;
+  color: #38bdf8;
 }
 .reveal h3 {
-  font-size: 1.25em;
+  font-size: 1.22em;
   font-weight: 600;
-  color: #F59E0B;
+  color: #7dd3fc;
 }
 
 /* ===== Slide de transição ===== */
 .reveal .title-slide {
-  background:
-    linear-gradient(135deg, rgba(3, 7, 18, 0.88), rgba(15, 23, 42, 0.72), rgba(8, 47, 73, 0.48)),
+  background: linear-gradient(
+      135deg,
+      rgba(3, 7, 18, 0.90),
+      rgba(8, 22, 40, 0.78),
+      rgba(14, 116, 144, 0.50)
+    ),
     url("media/transicao_asteroides.jpg");
   background-size: cover;
   background-position: center;
-  color: #F8FAFC;
+  color: #f8fbff;
 }
 .reveal .slides section.glass {
-  background: rgba(15, 23, 42, 0.30);
+  background: rgba(8, 22, 40, 0.24);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
 .reveal .title-slide h1,
 .reveal .title-slide h2,
 .reveal .title-slide p {
-  color: #F8FAFC;
+  color: #f8fbff;
+}
+.reveal section.title-slide h1 {
+  display: inline-block;
+  width: auto;
+  max-width: calc(100% - 2.4em);
 }
 
 /* ===== Texto ===== */
 .reveal p,
 .reveal li {
-  line-height: 1.43;
+  line-height: 1.34;
 }
+.reveal ul {
+  margin-top: 0.25em;
+}
+
+/* ===== Listas ===== */
 .reveal ul li::marker {
-  color: #F59E0B;
+  color: #38bdf8;
 }
 
 /* ===== Caixas ===== */
-.box-amber {
-  border-left: 8px solid #F59E0B;
-  background: rgba(245, 158, 11, 0.10);
-  padding: 0.7em;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-}
+.box-gold,
 .box-blue {
-  border-left: 8px solid #38BDF8;
-  background: rgba(56, 189, 248, 0.11);
-  padding: 0.8em 1em;
+  border-left: 8px solid #38bdf8;
+  background: rgba(56, 189, 248, 0.10);
+  padding: 0.62em;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.30);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
 }
-.box-gold {
-  border-left: 8px solid #F59E0B;
-  background: rgba(245, 158, 11, 0.10);
-  padding: 0.7em;
+.box-copper,
+.box-navy {
+  border-left: 8px solid #1d4ed8;
+  background: rgba(29, 78, 216, 0.16);
+  padding: 0.78em 0.95em;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-}
-.box-copper {
-  border-left: 8px solid #38BDF8;
-  background: rgba(56, 189, 248, 0.11);
-  padding: 0.8em 1em;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.30);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.30);
 }
 
 /* ===== Destaques ===== */
 .highlight-gold,
-.highlight-amber {
-  color: #F59E0B;
+.highlight-blue {
+  color: #7dd3fc;
   font-weight: 700;
 }
 .highlight-copper,
-.highlight-blue {
-  color: #38BDF8;
+.highlight-navy {
+  color: #60a5fa;
   font-weight: 700;
+}
+
+/* ===== Glass Referencia ===== */
+.reveal .slides section.glass {
+  background: rgba(8, 22, 40, 0.24);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 /* ===== Slide Final ===== */
 .reveal .final-slide {
-  background:
-    linear-gradient(135deg, rgba(3, 7, 18, 0.76), rgba(3, 7, 18, 0.50), rgba(8, 47, 73, 0.35)),
+  background: linear-gradient(
+      135deg,
+      rgba(3, 7, 18, 0.72),
+      rgba(8, 22, 40, 0.52),
+      rgba(14, 116, 144, 0.28)
+    ),
     url("media/final_asteroides.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  color: #F8FAFC;
+  color: #f8fbff;
 }
-.reveal section.title-slide.final-slide,
-.reveal section.title-slide.final-slide h1 {
+.reveal section.title-slide.final-slide {
   background: none !important;
   background-color: transparent !important;
-  font-size: 2.5em !important;
   background-image: none !important;
-  color: #F59E0B;
+}
+.reveal section.title-slide.final-slide h1 {
+  font-size: 2.5em !important;
+  color: #7dd3fc;
   transform: translateY(-70px) translateX(50px);
 }
 
@@ -168,40 +175,47 @@
 .reveal table {
   border-collapse: collapse;
   width: 100%;
-  font-size: 0.75em;
+  font-size: 0.68em;
   border-radius: 8px;
   overflow: hidden;
 }
 
+/* ===== Tema: cabeçalho ===== */
 .reveal table.tabela-tema thead th {
-  background-color: #38BDF8 !important;
+  background-color: #38bdf8 !important;
   color: #020617 !important;
   font-weight: 700;
-  padding: 10px;
+  padding: 8px;
   text-align: left;
-  border-bottom: 3px solid #F59E0B;
+  border-bottom: 3px solid #1d4ed8;
   position: sticky;
   top: 0;
   z-index: 1;
 }
+
+/* ===== Tema: corpo ===== */
 .reveal table.tabela-tema tbody td {
-  padding: 8px 10px;
-  border-bottom: 1px solid #26324A;
-  color: #E5E7EB;
+  padding: 6px 8px;
+  border-bottom: 1px solid #1e293b;
+  color: #e8f4ff;
 }
+
 .reveal table.tabela-tema tbody tr:nth-child(even) {
-  background-color: #101827;
+  background-color: #0f1f35;
 }
+
 .reveal table.tabela-tema tbody tr:nth-child(odd) {
-  background-color: #0F172A;
+  background-color: #0b1728;
 }
+
 .reveal table.tabela-tema tbody tr:hover {
   background-color: rgba(56, 189, 248, 0.12);
   transition: background-color 0.2s;
 }
+
 .reveal table.tabela-tema tbody td:first-child {
   font-weight: 600;
-  color: #F59E0B;
+  color: #7dd3fc;
   font-family: monospace;
 }
 
@@ -210,72 +224,82 @@
   display: block;
   width: 100%;
 }
+
 .tabela-scroll thead {
   display: table;
   width: 100%;
   table-layout: fixed;
 }
+
 .tabela-scroll tbody {
   display: block;
-  max-height: 450px;
+  max-height: 430px;
   overflow-y: auto;
   width: 100%;
   scrollbar-width: thin;
-  scrollbar-color: #38BDF8 #0F172A;
+  scrollbar-color: #38bdf8 #0b1728;
 }
+
 .tabela-scroll tbody::-webkit-scrollbar {
   width: 5px;
 }
+
 .tabela-scroll tbody::-webkit-scrollbar-track {
-  background: #0F172A;
+  background: #0b1728;
   border-radius: 4px;
 }
+
 .tabela-scroll tbody::-webkit-scrollbar-thumb {
-  background: #38BDF8;
+  background: #38bdf8;
   border-radius: 4px;
 }
+
 .tabela-scroll tbody tr {
   display: table;
   width: 100%;
   table-layout: fixed;
 }
 
-.reveal table.tabela-tema-destaque1 tbody tr:nth-child(1) td,
-.reveal table.tabela-tema-destaque1 tbody tr:nth-child(2) td,
-.reveal table.tabela-tema-destaque1 tbody tr:nth-child(3) td {
-  background-color: rgba(245, 158, 11, 0.16) !important;
-  color: #FBBF24 !important;
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(8) td,
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(9) td,
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(10) td,
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(17) td,
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(18) td,
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(19) td,
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(20) td,
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(43) td {
+  background-color: rgba(56, 189, 248, 0.18) !important;
+  color: #bfdbfe !important;
   font-weight: 700;
 }
 
 /* ===== code ===== */
-code.amber,
-code.copper {
-  color: #F59E0B;
-  background: rgba(245, 158, 11, 0.10);
-  padding: 0.14em 0.35em;
-  border-radius: 6px;
+code.copper,
+code.navy {
+  background: rgba(29, 78, 216, 0.18);
+  color: #93c5fd;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
+code.gold,
 code.blue {
-  color: #38BDF8;
-  background: rgba(56, 189, 248, 0.10);
-  padding: 0.14em 0.35em;
-  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.16);
+  color: #7dd3fc;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
-/* ===== Scroll output ===== */
-.scroll-output {
-  max-height: 440px;
+/* ===== scroll da saída do chunk ===== */
+.scroll-output pre {
+  overflow-x: auto;
   overflow-y: auto;
-  font-size: 0.56em;
-  background: #020617;
-  border-left: 5px solid #38BDF8;
-  border-radius: 8px;
-  padding: 0.5em;
+  max-height: 290px;
+  white-space: pre;
+  font-size: 0.72em;
 }
 
 .underline {
   text-decoration: underline;
-  text-decoration-color: #F59E0B;
+  text-decoration-color: #38bdf8;
   text-underline-offset: 0.18em;
 }
