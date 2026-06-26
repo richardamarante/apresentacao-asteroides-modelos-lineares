@@ -1,0 +1,27 @@
+---
+pagetitle: "Modelagem do Diâmetro de Asteroides"
+format:
+  html:
+    toc: false
+    page-layout: full
+    theme: none
+---
+
+```{=html}
+<style>
+  #title-block-header { display: none !important; }
+  body { margin: 0; }
+</style>
+<main style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0B1020;color:#E5E7EB;font-family:Inter,Segoe UI,Arial,sans-serif;padding:2rem;">
+  <section style="width:min(920px,100%);">
+    <p style="color:#38BDF8;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:0 0 1rem;">Modelos Lineares</p>
+    <h1 style="font-size:clamp(2.6rem,6vw,5rem);line-height:1.02;margin:0 0 1rem;color:#F8FAFC;">Modelagem do Diâmetro de Asteroides</h1>
+    <p style="font-size:clamp(1.1rem,2.2vw,1.45rem);line-height:1.55;color:#CBD5E1;max-width:760px;margin:0 0 2rem;">
+      Estudo da relação entre magnitude absoluta, albedo e diâmetro em uma base de pequenos corpos do Sistema Solar.
+    </p>
+    <a href="trabalho/index.html" style="display:inline-flex;align-items:center;gap:.55rem;background:#F59E0B;color:#020617;text-decoration:none;font-weight:800;border-radius:8px;padding:.9rem 1.15rem;">
+      Abrir apresentação
+    </a>
+  </section>
+</main>
+```

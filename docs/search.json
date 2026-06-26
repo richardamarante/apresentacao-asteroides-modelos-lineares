@@ -1,0 +1,128 @@
+[
+  {
+    "objectID": "trabalho/index.html#introdução-1",
+    "href": "trabalho/index.html#introdução-1",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "1.1 Introdução",
+    "text": "1.1 Introdução\n\n\n\nO que são asteroides?\n\nPequenos corpos rochosos que orbitam o Sol.\nMuitos se concentram no cinturão principal, entre Marte e Júpiter.\nParte deles cruza ou se aproxima da vizinhança orbital da Terra.\n\n\n\n\nRelevância:\n\nPreservam material remanescente da formação do Sistema Solar interno.\nEstão associados à origem de muitos meteoritos estudados em laboratório.\nAlguns podem colidir com a Terra e modificar a biosfera.\nTambém representam fontes potenciais de minerais e voláteis.\n\n\n\n\n\n\nQuestão estatística:\nO diâmetro observado de um asteroide pode ser explicado por duas variáveis físicas simples?\n\n\nlog(diâmetro) em função de H e log(albedo)\n\n\n\nH resume o brilho absoluto do asteroide.\nalbedo mede a fração de luz refletida.\nEm conjunto, as duas variáveis carregam informação direta sobre tamanho."
+  },
+  {
+    "objectID": "trabalho/index.html#os-dados",
+    "href": "trabalho/index.html#os-dados",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "2.1 Os dados",
+    "text": "2.1 Os dados\n\n\n\nOrigem dos Dados\n\nBase de pequenos corpos do Sistema Solar, com variáveis físicas e orbitais.\nRegistros com asteroides numerados e não numerados.\nAs variáveis seguem a nomenclatura usada pelo JPL Small-Body Database.\n\n\n\n\nComposição dos Dados\n\nObservações: 958.524 asteroides;\nVariáveis originais: 45 colunas;\nNEOs: 22.895;\nPHAs: 2.066;\nCasos completos para o modelo: 131.237.\n\n\n\n\n\n\nEstrutura das Variáveis\n\n\n\nVariável\nDescrição\nTipo\n\n\n\n\ndiameter\nDiâmetro do asteroide, em km\nNumérica\n\n\nH\nMagnitude absoluta\nNumérica\n\n\nalbedo\nFração de luz refletida\nNumérica\n\n\na\nSemi-eixo maior, em UA\nNumérica\n\n\ne\nExcentricidade orbital\nNumérica\n\n\ni\nInclinação orbital, em graus\nNumérica\n\n\nmoid\nDistância mínima da órbita da Terra, em UA\nNumérica\n\n\nclass\nClasse orbital\nCategórica\n\n\nneo\nIndicador de objeto próximo da Terra\nCategórica\n\n\npha\nIndicador de potencial perigo\nCategórica"
+  },
+  {
+    "objectID": "trabalho/index.html#metodologia-1",
+    "href": "trabalho/index.html#metodologia-1",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "3.1 Metodologia",
+    "text": "3.1 Metodologia\n\n\n\n\n1\n\n\nExploração\n\n\nNAs, classes orbitais e relações bivariadas\n\n\n\n\n→\n\n\n\n\n2\n\n\nTransformações\n\n\nlog no diâmetro e no albedo\n\n\n\n\n⇄\n\n\n\n\n3\n\n\nRegressão\n\n\nmodelo linear múltiplo interpretável\n\n\n\n\n⇄\n\n\n\n\n4\n\n\nDiagnóstico\n\n\nresíduos, influência e pressupostos\n\n\n\n\n\n\n\nVariáveis Explicativas\n\nmagnitude absoluta H log(albedo)\n\n\n\n\n   \n\n\n\nVariável Resposta\nlog(diâmetro em km)"
+  },
+  {
+    "objectID": "trabalho/index.html#nas-categorias",
+    "href": "trabalho/index.html#nas-categorias",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.1 NAs & Categorias",
+    "text": "4.1 NAs & Categorias\n\n\n\n\n\n\n\n\nVariável\n% NAs\n\n\n\n\ndiâmetro\n85,79%\n\n\nalbedo\n85,91%\n\n\nH\n0,65%\n\n\nclasse orbital\n0%\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nClasse\nAsteroides\n\n\n\n\nMBA\n855.954\n\n\nOMB\n28.355\n\n\nIMB\n20.360\n\n\nMCA\n18.685\n\n\nAPO\n12.687\n\n\nAMO\n8.457\n\n\nTJN\n8.221\n\n\nTNO\n3.468"
+  },
+  {
+    "objectID": "trabalho/index.html#h-x-logdiâmetro",
+    "href": "trabalho/index.html#h-x-logdiâmetro",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.2 H X log(diâmetro)",
+    "text": "4.2 H X log(diâmetro)"
+  },
+  {
+    "objectID": "trabalho/index.html#albedo-x-logdiâmetro",
+    "href": "trabalho/index.html#albedo-x-logdiâmetro",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.3 albedo X log(diâmetro)",
+    "text": "4.3 albedo X log(diâmetro)"
+  },
+  {
+    "objectID": "trabalho/index.html#semi-eixo-maior-x-logdiâmetro",
+    "href": "trabalho/index.html#semi-eixo-maior-x-logdiâmetro",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.4 semi-eixo maior X log(diâmetro)",
+    "text": "4.4 semi-eixo maior X log(diâmetro)"
+  },
+  {
+    "objectID": "trabalho/index.html#excentricidade-x-logdiâmetro",
+    "href": "trabalho/index.html#excentricidade-x-logdiâmetro",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.5 excentricidade X log(diâmetro)",
+    "text": "4.5 excentricidade X log(diâmetro)"
+  },
+  {
+    "objectID": "trabalho/index.html#inclinação-x-logdiâmetro",
+    "href": "trabalho/index.html#inclinação-x-logdiâmetro",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.6 inclinação X log(diâmetro)",
+    "text": "4.6 inclinação X log(diâmetro)"
+  },
+  {
+    "objectID": "trabalho/index.html#classe-orbital-x-logdiâmetro",
+    "href": "trabalho/index.html#classe-orbital-x-logdiâmetro",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.7 classe orbital X log(diâmetro)",
+    "text": "4.7 classe orbital X log(diâmetro)"
+  },
+  {
+    "objectID": "trabalho/index.html#neopha-x-logdiâmetro",
+    "href": "trabalho/index.html#neopha-x-logdiâmetro",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.8 NEO/PHA X log(diâmetro)",
+    "text": "4.8 NEO/PHA X log(diâmetro)"
+  },
+  {
+    "objectID": "trabalho/index.html#o-modelo",
+    "href": "trabalho/index.html#o-modelo",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.9 O modelo",
+    "text": "4.9 O modelo\n\nmodelo &lt;- lm(\n  log_diametro ~ magnitude_absoluta_h + log_albedo,\n  data = df_modelo\n)\n\n\n\n\nsummary(modelo)\n\n\nCall:\nlm(formula = log_diametro ~ magnitude_absoluta_h + log_albedo, \n    data = df_modelo)\n\nResiduals:\n     Min       1Q   Median       3Q      Max \n-1.94838 -0.05576  0.00476  0.05953  2.24100 \n\nCoefficients:\n                       Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)           7.2188511  0.0037601  1919.9   &lt;2e-16 ***\nmagnitude_absoluta_h -0.4509525  0.0002566 -1757.2   &lt;2e-16 ***\nlog_albedo           -0.4496159  0.0004621  -973.1   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 0.1242 on 131234 degrees of freedom\nMultiple R-squared:  0.9625,    Adjusted R-squared:  0.9625 \nF-statistic: 1.684e+06 on 2 and 131234 DF,  p-value: &lt; 2.2e-16\n\n\n\n\n\n\nanova(modelo)\n\nAnalysis of Variance Table\n\nResponse: log_diametro\n                         Df Sum Sq Mean Sq F value    Pr(&gt;F)    \nmagnitude_absoluta_h      1  37325   37325 2420227 &lt; 2.2e-16 ***\nlog_albedo                1  14603   14603  946847 &lt; 2.2e-16 ***\nResiduals            131234   2024       0                      \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
+  },
+  {
+    "objectID": "trabalho/index.html#fivs",
+    "href": "trabalho/index.html#fivs",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.10 FIVs",
+    "text": "4.10 FIVs\n\ncar::vif(modelo)\n\nmagnitude_absoluta_h           log_albedo \n            1.074644             1.074644"
+  },
+  {
+    "objectID": "trabalho/index.html#resíduos-studentizados",
+    "href": "trabalho/index.html#resíduos-studentizados",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.11 Resíduos Studentizados",
+    "text": "4.11 Resíduos Studentizados"
+  },
+  {
+    "objectID": "trabalho/index.html#qq-plot",
+    "href": "trabalho/index.html#qq-plot",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.12 QQ-plot",
+    "text": "4.12 QQ-plot"
+  },
+  {
+    "objectID": "trabalho/index.html#alavanca-influência",
+    "href": "trabalho/index.html#alavanca-influência",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "4.13 Alavanca & Influência",
+    "text": "4.13 Alavanca & Influência"
+  },
+  {
+    "objectID": "trabalho/index.html#conclusão-1",
+    "href": "trabalho/index.html#conclusão-1",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "5.1 Conclusão",
+    "text": "5.1 Conclusão\n\n\n\nO Modelo\n\nR² ajustado: 0,9625;\nFIV máximo: 1,07;\nH maior está associado a menor diâmetro;\nalbedo maior também está associado a menor diâmetro, mantendo H constante.\n\n\n\n\n\n\nDiagnóstico\n\nBreusch-Pagan: p-valor &lt; 0,001;\nDurbin-Watson: 1,841;\nShapiro-Wilk: p-valor &lt; 0,001;\nOs resíduos concentram-se no centro, mas apresentam caudas pesadas."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Modelagem do Diâmetro de Asteroides",
+    "section": "",
+    "text": "Modelos Lineares\n    Modelagem do Diâmetro de Asteroides\n    \n      Estudo da relação entre magnitude absoluta, albedo e diâmetro em uma base de pequenos corpos do Sistema Solar.\n    \n    \n      Abrir apresentação"
+  }
+]

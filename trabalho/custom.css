@@ -1,0 +1,281 @@
+/* ===== Base ===== */
+.reveal {
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-size: 30px;
+  background-color: #0B1020;
+  color: #E5E7EB;
+}
+.reveal .slides section li {
+  text-align: left;
+}
+.reveal .slides {
+  text-align: left;
+}
+
+/* ==== Slide de título ==== */
+#title-slide {
+  background:
+    linear-gradient(90deg, rgba(3, 7, 18, 0.86), rgba(3, 7, 18, 0.58), rgba(3, 7, 18, 0.24)),
+    url("media/capa_asteroides.jpg");
+  background-size: cover;
+  background-position: center;
+}
+#title-slide .title {
+  color: #F8FAFC;
+  font-size: 2.15em;
+  font-weight: 800;
+  transform: translateY(10px);
+  line-height: 1.12;
+  max-width: 850px;
+}
+#title-slide .subtitle {
+  color: #38BDF8;
+  font-size: 1.15em;
+  font-weight: 400;
+  margin-top: 0.4em;
+}
+#title-slide .author {
+  color: #CBD5E1;
+  font-size: 0.70em;
+  margin-top: 1em;
+}
+#title-slide .institute {
+  color: #CBD5E1;
+  font-size: 0.58em;
+  font-style: italic;
+}
+#title-slide .date {
+  color: #94A3B8;
+  font-size: 0.55em;
+  transform: translateY(-10px);
+}
+
+/* ===== Títulos ===== */
+.reveal h1 {
+  font-size: 2.35em;
+  font-weight: 800;
+  color: #F59E0B;
+}
+.reveal h2 {
+  font-size: 1.65em;
+  font-weight: 700;
+  color: #38BDF8;
+}
+.reveal h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  color: #F59E0B;
+}
+
+/* ===== Slide de transição ===== */
+.reveal .title-slide {
+  background:
+    linear-gradient(135deg, rgba(3, 7, 18, 0.88), rgba(15, 23, 42, 0.72), rgba(8, 47, 73, 0.48)),
+    url("media/transicao_asteroides.jpg");
+  background-size: cover;
+  background-position: center;
+  color: #F8FAFC;
+}
+.reveal .slides section.glass {
+  background: rgba(15, 23, 42, 0.30);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.reveal .title-slide h1,
+.reveal .title-slide h2,
+.reveal .title-slide p {
+  color: #F8FAFC;
+}
+
+/* ===== Texto ===== */
+.reveal p,
+.reveal li {
+  line-height: 1.43;
+}
+.reveal ul li::marker {
+  color: #F59E0B;
+}
+
+/* ===== Caixas ===== */
+.box-amber {
+  border-left: 8px solid #F59E0B;
+  background: rgba(245, 158, 11, 0.10);
+  padding: 0.7em;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+.box-blue {
+  border-left: 8px solid #38BDF8;
+  background: rgba(56, 189, 248, 0.11);
+  padding: 0.8em 1em;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.30);
+}
+.box-gold {
+  border-left: 8px solid #F59E0B;
+  background: rgba(245, 158, 11, 0.10);
+  padding: 0.7em;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+.box-copper {
+  border-left: 8px solid #38BDF8;
+  background: rgba(56, 189, 248, 0.11);
+  padding: 0.8em 1em;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.30);
+}
+
+/* ===== Destaques ===== */
+.highlight-gold,
+.highlight-amber {
+  color: #F59E0B;
+  font-weight: 700;
+}
+.highlight-copper,
+.highlight-blue {
+  color: #38BDF8;
+  font-weight: 700;
+}
+
+/* ===== Slide Final ===== */
+.reveal .final-slide {
+  background:
+    linear-gradient(135deg, rgba(3, 7, 18, 0.76), rgba(3, 7, 18, 0.50), rgba(8, 47, 73, 0.35)),
+    url("media/final_asteroides.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #F8FAFC;
+}
+.reveal section.title-slide.final-slide,
+.reveal section.title-slide.final-slide h1 {
+  background: none !important;
+  background-color: transparent !important;
+  font-size: 2.5em !important;
+  background-image: none !important;
+  color: #F59E0B;
+  transform: translateY(-70px) translateX(50px);
+}
+
+/* ===== Rodapé ===== */
+.reveal .footer {
+  font-size: 0.5em;
+  color: rgba(203, 213, 225, 0.70);
+}
+
+/* ===== Tabela geral ===== */
+.reveal table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.75em;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.reveal table.tabela-tema thead th {
+  background-color: #38BDF8 !important;
+  color: #020617 !important;
+  font-weight: 700;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 3px solid #F59E0B;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.reveal table.tabela-tema tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #26324A;
+  color: #E5E7EB;
+}
+.reveal table.tabela-tema tbody tr:nth-child(even) {
+  background-color: #101827;
+}
+.reveal table.tabela-tema tbody tr:nth-child(odd) {
+  background-color: #0F172A;
+}
+.reveal table.tabela-tema tbody tr:hover {
+  background-color: rgba(56, 189, 248, 0.12);
+  transition: background-color 0.2s;
+}
+.reveal table.tabela-tema tbody td:first-child {
+  font-weight: 600;
+  color: #F59E0B;
+  font-family: monospace;
+}
+
+/* ===== Tabela com scroll ===== */
+.tabela-scroll {
+  display: block;
+  width: 100%;
+}
+.tabela-scroll thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.tabela-scroll tbody {
+  display: block;
+  max-height: 450px;
+  overflow-y: auto;
+  width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #38BDF8 #0F172A;
+}
+.tabela-scroll tbody::-webkit-scrollbar {
+  width: 5px;
+}
+.tabela-scroll tbody::-webkit-scrollbar-track {
+  background: #0F172A;
+  border-radius: 4px;
+}
+.tabela-scroll tbody::-webkit-scrollbar-thumb {
+  background: #38BDF8;
+  border-radius: 4px;
+}
+.tabela-scroll tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(1) td,
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(2) td,
+.reveal table.tabela-tema-destaque1 tbody tr:nth-child(3) td {
+  background-color: rgba(245, 158, 11, 0.16) !important;
+  color: #FBBF24 !important;
+  font-weight: 700;
+}
+
+/* ===== code ===== */
+code.amber,
+code.copper {
+  color: #F59E0B;
+  background: rgba(245, 158, 11, 0.10);
+  padding: 0.14em 0.35em;
+  border-radius: 6px;
+}
+code.blue {
+  color: #38BDF8;
+  background: rgba(56, 189, 248, 0.10);
+  padding: 0.14em 0.35em;
+  border-radius: 6px;
+}
+
+/* ===== Scroll output ===== */
+.scroll-output {
+  max-height: 440px;
+  overflow-y: auto;
+  font-size: 0.56em;
+  background: #020617;
+  border-left: 5px solid #38BDF8;
+  border-radius: 8px;
+  padding: 0.5em;
+}
+
+.underline {
+  text-decoration: underline;
+  text-decoration-color: #F59E0B;
+  text-underline-offset: 0.18em;
+}
