@@ -622,9 +622,10 @@ saida_pre(anova(modelo_reduzido), "output-anova-reduzido", "anova(modelo_transfo
 ```{r}
 #| fig-align: center
 #| out-width: "100%"
-#| fig-height: 6.5
-diag_cheio    <- diagnosticos_modelo(modelo_cheio, 8)
-diag_reduzido <- diagnosticos_modelo(modelo_reduzido, 8)
+#| out-height: "580px"
+#| fig-height: 8.5
+diag_cheio    <- diagnosticos_modelo(modelo_cheio, 9)
+diag_reduzido <- diagnosticos_modelo(modelo_reduzido, 9)
 gridExtra::grid.arrange(
   diag_cheio$residuos    + labs(title = "Antes: diâmetro"),
   diag_reduzido$residuos + labs(title = "Depois: log(diâmetro)"),
