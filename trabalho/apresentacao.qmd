@@ -162,8 +162,8 @@ diagnosticos_modelo <- function(ajuste, base_size = 10) {
 [**O que são asteroides?**]{.underline}
 
 - Corpos rochosos que sobraram da formação do Sistema Solar.
-- A maioria vive no cinturão principal, entre Marte e Júpiter.
-- Alguns se aproximam da Terra (NEOs); poucos oferecem risco real (PHAs).
+- A maioria vive no cinturão principal, localizado entre Marte e Júpiter.
+- Alguns se aproximam da Terra (os chamados NEOs), porém poucos oferecem risco real (PHAs).
 
 :::
 
@@ -174,9 +174,9 @@ diagnosticos_modelo <- function(ajuste, base_size = 10) {
 
 - Guardam pistas de como a Terra se formou há ~4,6 bilhões de anos.
 - Estão na origem de boa parte dos meteoritos.
-- Importam para defesa planetária e estudo de recursos.
+- São importantes para defesa planetária e estudo de recursos minerais.
 
-- **Pravec & Harris (2007)** — relação física clássica entre tamanho e grandezas observacionais.
+- **Pravec & Harris (2007)** — descoberta de relação físice entre o diâmetro de asteroides e certas grandezas observacionais.
 - **Hossain et al. (2023)** — regressão linear, random forest e XGBoost para prever o diâmetro com dados do JPL.
 
 :::
@@ -192,9 +192,8 @@ diagnosticos_modelo <- function(ajuste, base_size = 10) {
 [**O problema**]{.underline}
 
 - A base do JPL reúne mais de **`r fmt_int(resumo_bruto$n_total)`** asteroides.
-- O **diâmetro** não é conhecido em **`r fmt_pct(resumo_bruto$pct_sem_diametro)`** dos registros.
-- A medição direta exige observação térmica, radar ou ocultação.
-
+- No entanto, **diâmetro** não é conhecido em **`r fmt_pct(resumo_bruto$pct_sem_diametro)`** dos registros.
+- A medição direta exige métodos muito custosos ou, majoritariamente, inacessíveis com a tecnologia atual.
 :::
 
 <br>
@@ -234,10 +233,10 @@ Com as variáveis já disponíveis na base, é possível **estimar o diâmetro**
 
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.7em 0.85em; margin-top:0.5em;">
   <div><strong style="font-size:1.3em; color:#7dd3fc;">`r fmt_int(resumo_bruto$n_total)`</strong><br><span style="color:#cbd5e1;">asteroides</span></div>
-  <div><strong style="font-size:1.3em; color:#7dd3fc;">`r resumo_bruto$n_variaveis`</strong><br><span style="color:#cbd5e1;">variáveis (`r resumo_bruto$n_numericas` num. + `r resumo_bruto$n_categoricas` cat.)</span></div>
+  <div><strong style="font-size:1.3em; color:#7dd3fc;">`r resumo_bruto$n_variaveis`</strong><br><span style="color:#cbd5e1;">variáveis</span></div>
   <div><strong style="font-size:1.3em; color:#7dd3fc;">`r fmt_int(resumo_bruto$n_neo)`</strong><br><span style="color:#cbd5e1;">próximos da Terra (NEO)</span></div>
   <div><strong style="font-size:1.3em; color:#7dd3fc;">`r fmt_int(resumo_bruto$n_pha)`</strong><br><span style="color:#cbd5e1;">potencialmente perigosos (PHA)</span></div>
-  <div style="grid-column:1 / -1;"><strong style="font-size:1.38em; color:#7dd3fc;">`r fmt_int(obj$resumo_modelo$n_modelo)`</strong><br><span style="color:#cbd5e1;">casos completos para o modelo (`r fmt_pct(100 * obj$resumo_modelo$n_modelo / resumo_bruto$n_total)` da base)</span></div>
+  <div style="grid-column:1 / -1;"><strong style="font-size:1.38em; color:#7dd3fc;">`r fmt_int(obj$resumo_modelo$n_modelo)`</strong><br><span style="color:#cbd5e1;">linhas completas para utilizarmos (`r fmt_pct(100 * obj$resumo_modelo$n_modelo / resumo_bruto$n_total)` da base)</span></div>
 </div>
 
 :::
@@ -504,7 +503,7 @@ p_flags <- ggplot(df_flags, aes(Classificação, diametro)) +
 gridExtra::grid.arrange(p_distancia, p_flags, ncol = 2)
 ```
 
-## Matriz de correlação e primeiro ajuste {style="font-size: 0.72em;"}
+## Matriz de correlação e ajuste com todas as variáveis {style="font-size: 0.72em;"}
 
 :::: {.columns}
 
@@ -576,7 +575,7 @@ cat('</div>')
 
 # Transformação e seleção
 
-## Box-Cox: transformação da resposta
+## Box-Cox
 
 ```{r}
 #| fig-align: center
@@ -623,24 +622,21 @@ saida_pre(anova(modelo_reduzido), "output-anova-reduzido", "anova(modelo_transfo
 ```{r}
 #| fig-align: center
 #| out-width: "100%"
-#| fig-height: 2.15
-diag_cheio <- diagnosticos_modelo(modelo_cheio, 7.2)
-diag_cheio$residuos + labs(title = "Antes: diâmetro")
-```
-
-```{r}
-#| fig-align: center
-#| out-width: "100%"
-#| fig-height: 2.15
+#| fig-height: 2.4
+diag_cheio    <- diagnosticos_modelo(modelo_cheio, 7.2)
 diag_reduzido <- diagnosticos_modelo(modelo_reduzido, 7.7)
-diag_reduzido$residuos + labs(title = "Depois: log(diâmetro)")
+gridExtra::grid.arrange(
+  diag_cheio$residuos    + labs(title = "Antes: diâmetro"),
+  diag_reduzido$residuos + labs(title = "Depois: log(diâmetro)"),
+  ncol = 2
+)
 ```
 
 :::
 
 ::::
 
-## Seleção por ganho de R² ajustado {style="font-size: 0.76em;"}
+## Forward Selection {style="font-size: 0.76em;"}
 
 <div class="selecao-title">Forward</div>
 
