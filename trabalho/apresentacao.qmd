@@ -35,19 +35,28 @@ library(tidyverse)
 library(qqplotr)
 library(car)
 library(lmtest)
+library(gridExtra)
 
 obj          <- readRDS("data/asteroides_modelo.rds")
 resumo_bruto <- obj$resumo_bruto
 df_modelo    <- obj$dados_modelo
 df_plot      <- obj$amostra_plot
 boxcox_df    <- obj$boxcox
+correlacao   <- obj$selecoes$correlacao
+fiv_passos   <- obj$selecoes$fiv_passos
+forward_path <- obj$selecoes$forward_path
+reduzido     <- obj$resumo_modelo$reduzido
 
-tabela_subconjuntos <- obj$selecoes$subconjuntos
-tabela_metodos      <- obj$selecoes$metodos
-tabela_lasso        <- obj$selecoes$lasso
-tabela_fiv          <- obj$selecoes$fiv
-
-modelo <- lm(log_diametro ~ magnitude_absoluta + log_albedo, data = df_modelo)
+# Modelos da narrativa
+modelo_cheio <- lm(
+  diametro ~ magnitude_absoluta + albedo + excentricidade_orbita +
+    tamanho_orbita + distancia_perielio + distancia_afelio +
+    inclinacao_orbita + orientacao_orbita + periodo_orbita +
+    vel_media_angular_orbita + dist_minima_terra,
+  data = df_modelo
+)
+modelo_reduzido <- lm(reformulate(reduzido, "log_diametro"), data = df_modelo)
+modelo          <- lm(log_diametro ~ magnitude_absoluta + log_albedo, data = df_modelo)
 
 tema_asteroides <- function(base_size = 14) {
   theme_minimal(base_size = base_size) +
@@ -70,11 +79,86 @@ tema_asteroides <- function(base_size = 14) {
 fmt_int <- function(x) format(x, big.mark = ".", decimal.mark = ",")
 fmt_pct <- function(x) paste0(format(round(x, 1), decimal.mark = ",", nsmall = 1), "%")
 fmt_num <- function(x, digits = 4) format(round(x, digits), decimal.mark = ",", nsmall = digits)
+fmt_p <- function(x) ifelse(x < 0.001, "< 0,001", fmt_num(x, 4))
+
+saida_pre <- function(x, classe = "output-mini") {
+  texto <- paste(capture.output(print(x)), collapse = "\n")
+  cat(
+    sprintf(
+      '<pre class="%s">%s</pre>',
+      classe,
+      htmltools::htmlEscape(texto)
+    )
+  )
+}
+
+diagnosticos_modelo <- function(ajuste, base_size = 10) {
+  h <- hatvalues(ajuste)
+  rstud <- rstudent(ajuste)
+  cook <- cooks.distance(ajuste)
+  p <- length(coef(ajuste))
+  n <- nobs(ajuste)
+  limite_h <- 2 * p / n
+  limite_cook <- 4 / n
+
+  dados <- tibble(
+    ajustado = fitted(ajuste),
+    rstud = rstud,
+    escala = sqrt(abs(rstud)),
+    h = h,
+    cook = cook
+  )
+
+  residuos <- ggplot(dados, aes(ajustado, rstud)) +
+    geom_point(alpha = 0.16, size = 0.55, color = "#7dd3fc") +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "#cbd5e1", linewidth = 0.4) +
+    geom_hline(yintercept = c(-3, 3), linetype = "dashed", color = "#60a5fa", linewidth = 0.6) +
+    geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), se = FALSE,
+                color = "#38bdf8", linewidth = 0.65) +
+    labs(title = "Resíduos × ajustados", x = "Ajustados", y = "Resíduo studentizado") +
+    tema_asteroides(base_size)
+
+  qq <- ggplot(tibble(rstud = rstud), aes(sample = rstud)) +
+    stat_qq_band(fill = "#38bdf8", alpha = 0.22) +
+    stat_qq_line(color = "#60a5fa", linewidth = 0.7) +
+    stat_qq_point(color = "#7dd3fc", size = 0.45, alpha = 0.38) +
+    labs(title = "QQ-plot", x = "Quantis teóricos", y = "Quantis amostrais") +
+    tema_asteroides(base_size)
+
+  escala <- ggplot(dados, aes(ajustado, escala)) +
+    geom_point(alpha = 0.16, size = 0.55, color = "#7dd3fc") +
+    geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), se = FALSE,
+                color = "#38bdf8", linewidth = 0.65) +
+    labs(title = "Escala-localização", x = "Ajustados", y = expression(sqrt("|resíduo studentizado|"))) +
+    tema_asteroides(base_size)
+
+  influencia <- ggplot(dados, aes(h, rstud)) +
+    geom_point(alpha = 0.18, size = 0.55, color = "#7dd3fc") +
+    geom_vline(xintercept = limite_h, linetype = "dashed", color = "#60a5fa", linewidth = 0.6) +
+    geom_hline(yintercept = 0, linetype = "dotted", color = "#cbd5e1", linewidth = 0.4) +
+    labs(
+      title = "Alavanca e influência",
+      subtitle = paste0("h > ", signif(limite_h, 2), "; Cook > ", signif(limite_cook, 2)),
+      x = "Leverage (hii)", y = "Resíduo studentizado"
+    ) +
+    tema_asteroides(base_size) +
+    theme(plot.subtitle = element_text(color = "#cbd5e1", size = rel(0.75)))
+
+  list(
+    dados = dados,
+    residuos = residuos,
+    qq = qq,
+    escala = escala,
+    influencia = influencia,
+    limite_h = limite_h,
+    limite_cook = limite_cook
+  )
+}
 ```
 
 # Introdução
 
-## Introdução {style="font-size: 0.86em;"}
+## Introdução {style="font-size: 0.85em;"}
 
 :::: {.columns}
 
@@ -85,7 +169,7 @@ fmt_num <- function(x, digits = 4) format(round(x, digits), decimal.mark = ",", 
 
 - Corpos rochosos que sobraram da formação do Sistema Solar.
 - A maioria vive no cinturão principal, entre Marte e Júpiter.
-- Alguns se aproximam da Terra (NEOs) e poucos oferecem risco real (PHAs).
+- Alguns se aproximam da Terra (NEOs); poucos oferecem risco real (PHAs).
 
 :::
 
@@ -94,9 +178,9 @@ fmt_num <- function(x, digits = 4) format(round(x, digits), decimal.mark = ",", 
 ::: {.box-gold style="font-size: 0.74em;"}
 [**Por que estudá-los?**]{.underline}
 
-- Guardam pistas químicas de como a Terra se formou há ~4,6 bilhões de anos.
+- Guardam pistas de como a Terra se formou há ~4,6 bilhões de anos.
 - Estão na origem de boa parte dos meteoritos.
-- Importam para defesa planetária e para o estudo de recursos minerais.
+- Importam para defesa planetária e estudo de recursos.
 
 :::
 
@@ -107,63 +191,26 @@ fmt_num <- function(x, digits = 4) format(round(x, digits), decimal.mark = ",", 
 
 ::: {.column width="47.5%"}
 
-::: {.box-gold style="font-size: 0.74em;"}
+::: {.box-decision style="font-size: 0.72em;"}
 [**O problema**]{.underline}
 
-- A base do JPL reúne mais de **`r fmt_int(resumo_bruto$n_total)`** asteroides.
-- Mas o **diâmetro** só foi medido para uma fração: **`r fmt_pct(resumo_bruto$pct_sem_diametro)`** dos registros não têm tamanho conhecido.
-- Medir tamanho diretamente é caro: exige observação térmica, radar ou ocultação.
+A base do JPL reúne **`r fmt_int(resumo_bruto$n_total)`** asteroides, mas o **diâmetro** só foi medido para uma fração: **`r fmt_pct(resumo_bruto$pct_sem_diametro)`** dos registros não têm tamanho conhecido (medir exige observação térmica, radar ou ocultação).
+
+<div style="margin-top:0.5em; text-align:center; color:#e8f4ff;">
+Com as variáveis disponíveis, dá para **estimar o diâmetro** por **regressão linear**?
+</div>
 
 :::
 
 <br>
 
-::: {.box-decision style="font-size: 0.78em; text-align:center;"}
-[**A pergunta**]{.underline}
+::: {.box-gold style="font-size: 0.6em;"}
+[**Estudos anteriores**]{.underline}
 
-Com as variáveis já disponíveis na base, é possível **estimar o diâmetro** de um asteroide por meio de um modelo de **regressão linear**?
+- **Masiero et al. (2011)** — WISE/NEOWISE estimou diâmetros e albedos de >100 mil asteroides.
+- **Pravec & Harris (2007)** — relação física clássica entre tamanho e grandezas observacionais.
+- **Hossain et al. (2023)** — regressão linear, random forest e XGBoost previram diâmetro a partir da base do JPL.
 
-:::
-
-:::
-
-::::
-
-## Na literatura {style="font-size: 0.9em;"}
-
-:::: {.columns}
-
-::: {.column width="48%"}
-
-::: {.box-gold style="font-size: 0.66em;"}
-[**Medir o tamanho é difícil**]{.underline}
-
-- **Masiero et al. (2011)** — o levantamento WISE/NEOWISE estimou diâmetros e albedos de mais de 100 mil asteroides do cinturão por modelagem térmica.
-
-- **Mainzer et al. (2011)** — diâmetros derivados do infravermelho têm incerteza típica de ~10%, e cobrem só uma parcela pequena da população.
-
-:::
-
-:::
-
-::: {.column width="4%"}
-:::
-
-::: {.column width="48%"}
-
-::: {.box-gold style="font-size: 0.66em;"}
-[**Estimar a partir de dados**]{.underline}
-
-- **Pravec & Harris (2007)** — há uma relação física clássica ligando o tamanho a grandezas observacionais do objeto.
-
-- **Hossain et al. (2023)** — compararam regressão linear, random forest e XGBoost para prever o diâmetro a partir de parâmetros da própria base do JPL; poucas variáveis concentraram o poder preditivo.
-
-:::
-
-<br>
-
-::: {.box-copper style="font-size: 0.66em;"}
-Nosso trabalho repete esse caminho com as ferramentas de **Modelos Lineares I**: explorar, transformar, selecionar e diagnosticar — deixando os **dados** indicarem o modelo.
 :::
 
 :::
@@ -183,13 +230,13 @@ Nosso trabalho repete esse caminho com as ferramentas de **Modelos Lineares I**:
 
 - Base **JPL Small-Body Database** (NASA).
 - Coletada pela ferramenta pública [SBDB Query](https://ssd.jpl.nasa.gov/tools/sbdb_query.html).
-- Reúne medidas físicas, elementos orbitais e classificações dinâmicas.
+- Medidas físicas, elementos orbitais e classificações dinâmicas.
 
 :::
 
 <br>
 
-::: {.box-gold style="font-size: 0.70em;"}
+::: {.box-gold style="font-size: 0.7em;"}
 [**Recorte**]{.underline}
 
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.7em 0.85em; margin-top:0.5em;">
@@ -197,7 +244,7 @@ Nosso trabalho repete esse caminho com as ferramentas de **Modelos Lineares I**:
   <div><strong style="font-size:1.3em; color:#7dd3fc;">`r resumo_bruto$n_variaveis`</strong><br><span style="color:#cbd5e1;">variáveis (`r resumo_bruto$n_numericas` num. + `r resumo_bruto$n_categoricas` cat.)</span></div>
   <div><strong style="font-size:1.3em; color:#7dd3fc;">`r fmt_int(resumo_bruto$n_neo)`</strong><br><span style="color:#cbd5e1;">próximos da Terra (NEO)</span></div>
   <div><strong style="font-size:1.3em; color:#7dd3fc;">`r fmt_int(resumo_bruto$n_pha)`</strong><br><span style="color:#cbd5e1;">potencialmente perigosos (PHA)</span></div>
-  <div style="grid-column:1 / -1;"><strong style="font-size:1.38em; color:#7dd3fc;">`r fmt_int(obj$resumo_modelo$n_modelo)`</strong><br><span style="color:#cbd5e1;">casos completos com diâmetro medido (a base do modelo)</span></div>
+  <div style="grid-column:1 / -1;"><strong style="font-size:1.38em; color:#7dd3fc;">`r fmt_int(obj$resumo_modelo$n_modelo)`</strong><br><span style="color:#cbd5e1;">casos completos com diâmetro medido (base do modelo)</span></div>
 </div>
 
 :::
@@ -219,7 +266,7 @@ knitr::kable(
   format = "html",
   align = "lll",
   caption = "",
-  table.attr = 'class="tabela-tema tabela-scroll"'
+  table.attr = 'class="tabela-tema tabela-dicionario"'
 )
 ```
 
@@ -236,8 +283,8 @@ knitr::kable(
 ::: {.column width="23.5%"}
 :::{.box-copper style="text-align:center;"}
 <div style="font-size:2em; font-weight:800; color:#7dd3fc;">1</div>
-<div style="font-weight:700; margin-bottom:0.4em;">Exploração</div>
-<div style="font-size:0.70em; color:#cbd5e1;">ausências, distribuições e dispersões</div>
+<div style="font-weight:700; margin-bottom:0.4em;">Análise descritiva</div>
+<div style="font-size:0.70em; color:#cbd5e1;">distribuições, dispersões e correlações</div>
 :::
 :::
 
@@ -248,8 +295,8 @@ knitr::kable(
 ::: {.column width="23.5%"}
 :::{.box-copper style="text-align:center;"}
 <div style="font-size:2em; font-weight:800; color:#7dd3fc;">2</div>
-<div style="font-weight:700; margin-bottom:0.4em;">Transformação</div>
-<div style="font-size:0.70em; color:#cbd5e1;">escala da resposta via Box-Cox</div>
+<div style="font-weight:700; margin-bottom:0.4em;">Ajuste & FIV</div>
+<div style="font-size:0.70em; color:#cbd5e1;">primeiro modelo e multicolinearidade</div>
 :::
 :::
 
@@ -260,8 +307,8 @@ knitr::kable(
 ::: {.column width="23.5%"}
 :::{.box-copper style="text-align:center;"}
 <div style="font-size:2em; font-weight:800; color:#7dd3fc;">3</div>
-<div style="font-weight:700; margin-bottom:0.4em;">Seleção</div>
-<div style="font-size:0.70em; color:#cbd5e1;">stepwise, LASSO, subconjuntos e FIV</div>
+<div style="font-weight:700; margin-bottom:0.4em;">Box-Cox & seleção</div>
+<div style="font-size:0.70em; color:#cbd5e1;">transformação e escolha de variáveis</div>
 :::
 :::
 
@@ -273,7 +320,7 @@ knitr::kable(
 :::{.box-copper style="text-align:center;"}
 <div style="font-size:2em; font-weight:800; color:#7dd3fc;">4</div>
 <div style="font-weight:700; margin-bottom:0.4em;">Diagnóstico</div>
-<div style="font-size:0.70em; color:#cbd5e1;">resíduos, normalidade e influência</div>
+<div style="font-size:0.70em; color:#cbd5e1;">resíduos, testes e influência</div>
 :::
 :::
 
@@ -287,10 +334,6 @@ knitr::kable(
 :::{.box-gold style="text-align:center; font-size:0.72em;"}
 
 **Variáveis candidatas**
-
-<div style="font-size:0.92em; margin-bottom:0.5em; color:#cbd5e1;">
-Entram todas as candidatas físicas, orbitais e categóricas. A seleção decide quais permanecem — não partimos de um palpite.
-</div>
 
 <div style="display:flex; flex-wrap:wrap; gap:0.35em; justify-content:center; margin-top:0.4em;">
   <code class="navy">magnitude</code>
@@ -313,7 +356,7 @@ Entram todas as candidatas físicas, orbitais e categóricas. A seleção decide
 :::
 
 ::: {.column width="7%"}
-<div style="display:flex; align-items:center; justify-content:center; height:100%; padding-top:36%;">
+<div style="display:flex; align-items:center; justify-content:center; height:100%; padding-top:30%;">
   <svg width="100%" height="24" viewBox="0 0 100 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
     <line x1="0" y1="12" x2="82" y2="12" stroke="#38bdf8" stroke-width="5" opacity="0.70"/>
     <polygon points="100,12 80,2 80,22" fill="#38bdf8" opacity="0.70"/>
@@ -337,215 +380,248 @@ Entram todas as candidatas físicas, orbitais e categóricas. A seleção decide
 
 # Resultados
 
-## Valores ausentes & classes
-
-:::: {.columns}
-
-::: {.column width="47.5%"}
-
-::: {.box-gold}
-
-```{r}
-na_tab <- resumo_bruto$nas |>
-  arrange(desc(`% NAs`)) |>
-  slice_head(n = 8) |>
-  transmute(
-    `Variável`,
-    `NAs`   = fmt_int(`NAs`),
-    `% NAs` = fmt_pct(`% NAs`)
-  )
-
-knitr::kable(na_tab, align = "lcc", caption = "")
-```
-
-:::
-
-:::
-
-::: {.column width="5%"}
-:::
-
-::: {.column width="47.5%"}
-
-::: {.box-gold}
-
-```{r}
-classe_tab <- resumo_bruto$classes |>
-  filter(!is.na(classe_orbita)) |>
-  slice_head(n = 8) |>
-  transmute(
-    `Classe orbital` = classe_orbita,
-    Asteroides       = fmt_int(n)
-  )
-
-knitr::kable(classe_tab, align = "lc", caption = "")
-```
-
-:::
-
-:::
-
-::::
-
-::: {.box-copper style="font-size:0.7em; margin-top:0.4em;"}
-O diâmetro falta em **`r fmt_pct(resumo_bruto$pct_sem_diametro)`** dos registros. A modelagem segue no subconjunto de **`r fmt_int(obj$resumo_modelo$n_modelo)`** asteroides com diâmetro medido e demais variáveis completas.
-:::
-
-## Transformação da resposta
-
-:::: {.columns}
-
-::: {.column width="66%"}
+## Análise descritiva: distribuições
 
 ```{r}
 #| fig-align: center
 #| out-width: "100%"
-#| out-height: "92%"
-#| fig-height: 5.2
-lambda_otimo <- obj$resumo_modelo$lambda_boxcox
+#| out-height: "82%"
+#| fig-height: 6.0
+p_diametro <- ggplot(df_plot, aes(diametro)) +
+  geom_histogram(bins = 42, fill = "#38bdf8", color = "#08111f", alpha = 0.88) +
+  coord_cartesian(xlim = c(0, quantile(df_plot$diametro, 0.99))) +
+  labs(title = "Diâmetro (até o percentil 99)", x = "km", y = "Frequência") +
+  tema_asteroides(10)
 
-ggplot(boxcox_df, aes(x = lambda, y = log_verossimilhanca)) +
-  geom_line(color = "#7dd3fc", linewidth = 1.1) +
-  geom_vline(xintercept = lambda_otimo, color = "#60a5fa",
-             linetype = "dashed", linewidth = 1) +
-  geom_vline(xintercept = 0, color = "#bfdbfe",
-             linetype = "dotted", linewidth = 0.9) +
-  scale_y_continuous(
-    labels = scales::label_number(scale = 1e-5, accuracy = 0.1, decimal.mark = ",")
-  ) +
-  labs(x = "Lambda", y = "Log-verossimilhança (×10⁵)") +
-  tema_asteroides()
+p_magnitude <- ggplot(df_plot, aes(magnitude_absoluta)) +
+  geom_histogram(bins = 42, fill = "#38bdf8", color = "#08111f", alpha = 0.88) +
+  labs(title = "Magnitude absoluta", x = "mag", y = "Frequência") +
+  tema_asteroides(10)
+
+p_albedo <- ggplot(df_plot, aes(albedo)) +
+  geom_histogram(bins = 42, fill = "#38bdf8", color = "#08111f", alpha = 0.88) +
+  labs(title = "Albedo", x = "0–1", y = "Frequência") +
+  tema_asteroides(10)
+
+p_orbita <- ggplot(df_plot, aes(tamanho_orbita)) +
+  geom_histogram(bins = 42, fill = "#38bdf8", color = "#08111f", alpha = 0.88) +
+  coord_cartesian(xlim = c(0, quantile(df_plot$tamanho_orbita, 0.99))) +
+  labs(title = "Tamanho da órbita (até o percentil 99)", x = "UA", y = "Frequência") +
+  tema_asteroides(10)
+
+gridExtra::grid.arrange(p_diametro, p_magnitude, p_albedo, p_orbita, ncol = 2)
 ```
 
-:::
-
-::: {.column width="3%"}
-:::
-
-::: {.column width="31%"}
-
-::: {.box-gold style="font-size:0.72em;"}
-[**Por que transformar**]{.underline}
-
-- O diâmetro é positivo e muito assimétrico (de metros a centenas de km).
-- O Box-Cox atinge o máximo perto de **`r fmt_num(lambda_otimo, 2)`**.
-- Lambda próximo de zero aponta para a escala **`log(diâmetro)`**.
-
-:::
-
-<br>
-
-::: {.box-copper style="font-size:0.66em;"}
-A transformação age sobre a **resposta**. As escalas dos preditores serão avaliadas pelos gráficos a seguir.
-:::
-
-:::
-
-::::
-
-## Dispersão: variáveis físicas
+## Análise descritiva: relações físicas
 
 ```{r}
 #| fig-align: center
 #| out-width: "100%"
-#| out-height: "80%"
-df_fisicas <- df_plot |>
-  transmute(
-    log_diametro,
-    `magnitude absoluta` = magnitude_absoluta,
-    `albedo`             = albedo,
-    `log(albedo)`        = log_albedo
-  ) |>
-  pivot_longer(cols = -log_diametro, names_to = "variavel", values_to = "valor") |>
-  mutate(variavel = factor(variavel,
-         levels = c("magnitude absoluta", "albedo", "log(albedo)")))
+#| out-height: "82%"
+#| fig-height: 5.8
+limite_diametro <- quantile(df_plot$diametro, 0.99)
 
-ggplot(df_fisicas, aes(x = valor, y = log_diametro)) +
-  geom_point(alpha = 0.18, size = 1.0, color = "#7dd3fc") +
-  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"),
-              se = FALSE, color = "#60a5fa", linewidth = 0.9) +
-  facet_wrap(~ variavel, scales = "free_x") +
-  labs(x = NULL, y = "log(diâmetro)") +
-  tema_asteroides(base_size = 12)
+p_mag_diam <- ggplot(df_plot, aes(magnitude_absoluta, diametro)) +
+  geom_point(alpha = 0.13, size = 0.65, color = "#7dd3fc") +
+  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), se = FALSE,
+              color = "#38bdf8", linewidth = 0.8) +
+  coord_cartesian(ylim = c(0, limite_diametro)) +
+  labs(x = "Magnitude absoluta", y = "Diâmetro (km; até P99)") +
+  tema_asteroides(12)
+
+p_alb_diam <- ggplot(df_plot, aes(albedo, diametro)) +
+  geom_point(alpha = 0.13, size = 0.65, color = "#7dd3fc") +
+  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), se = FALSE,
+              color = "#38bdf8", linewidth = 0.8) +
+  coord_cartesian(ylim = c(0, limite_diametro)) +
+  labs(x = "Albedo", y = "Diâmetro (km; até P99)") +
+  tema_asteroides(12)
+
+gridExtra::grid.arrange(p_mag_diam, p_alb_diam, ncol = 2)
 ```
 
-## Dispersão: órbita e classe
+## Análise descritiva: órbita e classificação
 
 ```{r}
 #| fig-align: center
 #| out-width: "100%"
-#| out-height: "80%"
-df_orbita <- df_plot |>
-  transmute(
-    log_diametro,
-    `excentricidade`         = excentricidade_orbita,
-    `inclinação (graus)`     = inclinacao_orbita,
-    `log(tamanho da órbita)` = log_tamanho_orbita,
-    `log(dist. mínima+1)`    = log_dist_minima_terra
-  ) |>
-  pivot_longer(cols = -log_diametro, names_to = "variavel", values_to = "valor")
+#| out-height: "83%"
+#| fig-height: 6.1
+p_exc <- ggplot(df_plot, aes(excentricidade_orbita, diametro)) +
+  geom_point(alpha = 0.12, size = 0.55, color = "#7dd3fc") +
+  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), se = FALSE,
+              color = "#38bdf8", linewidth = 0.7) +
+  coord_cartesian(ylim = c(0, limite_diametro)) +
+  labs(title = "Excentricidade", x = NULL, y = "Diâmetro (km; até P99)") +
+  tema_asteroides(9)
 
-p_orb <- ggplot(df_orbita, aes(x = valor, y = log_diametro)) +
-  geom_point(alpha = 0.14, size = 0.8, color = "#7dd3fc") +
-  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"),
-              se = FALSE, color = "#60a5fa", linewidth = 0.8) +
-  facet_wrap(~ variavel, scales = "free_x", ncol = 2) +
-  labs(x = NULL, y = "log(diâmetro)") +
-  tema_asteroides(base_size = 11)
+p_inclinacao <- ggplot(df_plot, aes(inclinacao_orbita, diametro)) +
+  geom_point(alpha = 0.12, size = 0.55, color = "#7dd3fc") +
+  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), se = FALSE,
+              color = "#38bdf8", linewidth = 0.7) +
+  coord_cartesian(ylim = c(0, limite_diametro)) +
+  labs(title = "Inclinação", x = "Graus", y = "Diâmetro (km; até P99)") +
+  tema_asteroides(9)
 
 classes_top <- df_modelo |>
   count(classe_orbita, sort = TRUE) |>
   slice_head(n = 8) |>
   pull(classe_orbita)
 
-p_classe <- df_modelo |>
+p_classes <- df_modelo |>
   filter(classe_orbita %in% classes_top) |>
-  ggplot(aes(x = fct_reorder(classe_orbita, log_diametro, .fun = median),
-             y = log_diametro)) +
+  ggplot(aes(fct_reorder(classe_orbita, diametro, .fun = median), diametro)) +
   geom_boxplot(fill = "#38bdf8", alpha = 0.45, color = "#7dd3fc",
-               outlier.color = "#bfdbfe", outlier.alpha = 0.3,
-               outlier.size = 0.5) +
-  coord_flip() +
-  labs(x = NULL, y = "log(diâmetro)") +
-  tema_asteroides(base_size = 11)
+               outlier.alpha = 0.10, outlier.size = 0.35) +
+  coord_flip(ylim = c(0, quantile(df_modelo$diametro, 0.99))) +
+  labs(title = "Classe orbital", x = NULL, y = "Diâmetro (km; até P99)") +
+  tema_asteroides(9)
 
-gridExtra::grid.arrange(p_orb, p_classe, ncol = 2)
+df_grupos <- df_modelo |>
+  transmute(diametro, NEO = neo, PHA = pha) |>
+  pivot_longer(-diametro, names_to = "grupo", values_to = "classe")
+
+p_grupos <- ggplot(df_grupos, aes(classe, diametro)) +
+  geom_boxplot(fill = "#38bdf8", alpha = 0.45, color = "#7dd3fc",
+               outlier.alpha = 0.10, outlier.size = 0.35) +
+  facet_wrap(~grupo, scales = "free_x") +
+  coord_cartesian(ylim = c(0, quantile(df_modelo$diametro, 0.99))) +
+  labs(title = "Proximidade e perigo", x = NULL, y = "Diâmetro (km; até P99)") +
+  tema_asteroides(9)
+
+gridExtra::grid.arrange(p_exc, p_inclinacao, p_classes, p_grupos, ncol = 2)
 ```
 
-## Seleção de variáveis
+## Matriz de correlação e primeiro ajuste {style="font-size: 0.72em;"}
 
 :::: {.columns}
 
-::: {.column width="57%"}
-
-::: {.box-gold style="font-size:0.74em;"}
-[**Melhores subconjuntos**]{.underline}
+::: {.column width="50%"}
 
 ```{r}
-sel_tab <- tabela_subconjuntos |>
-  mutate(
-    BIC = fmt_num(BIC, 1),
-    `R² ajustado` = fmt_num(`R² ajustado`, 4)
+#| fig-align: center
+#| out-width: "100%"
+#| fig-height: 6.1
+ggplot(correlacao, aes(x, y, fill = cor)) +
+  geom_tile(color = "#08111f", linewidth = 0.18) +
+  geom_text(aes(label = sprintf("%.2f", cor)), size = 2.05, color = "#f8fbff") +
+  scale_fill_gradient2(low = "#1d4ed8", mid = "#0f1f35", high = "#14b8a6",
+                       midpoint = 0, limits = c(-1, 1)) +
+  labs(x = NULL, y = NULL, fill = "Correlação") +
+  tema_asteroides(7.5) +
+  theme(
+    axis.text.x = element_text(angle = 48, hjust = 1, size = 6.2),
+    axis.text.y = element_text(size = 6.2),
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    legend.key.width = unit(1.6, "cm")
   )
-
-knitr::kable(sel_tab, align = "clcc", caption = "")
 ```
 
 :::
+
+::: {.column width="2%"}
+:::
+
+::: {.column width="48%"}
+
+```{r}
+#| results: asis
+saida_pre(summary(modelo_cheio), "output-modelo-cheio")
+```
+
+```{r}
+#| results: asis
+saida_pre(anova(modelo_cheio), "output-anova-cheio")
+```
+
+:::
+
+::::
+
+## Diagnóstico do primeiro modelo
+
+```{r}
+#| fig-align: center
+#| out-width: "100%"
+#| out-height: "84%"
+#| fig-height: 6.2
+diag_cheio <- diagnosticos_modelo(modelo_cheio, 8.5)
+gridExtra::grid.arrange(
+  diag_cheio$residuos, diag_cheio$qq,
+  diag_cheio$escala, diag_cheio$influencia,
+  ncol = 2
+)
+```
+
+## Multicolinearidade: remoção por FIV {style="font-size: 0.78em;"}
+
+```{r}
+#| results: asis
+cat('<div class="fiv-grid">')
+for (j in seq_along(fiv_passos)) {
+  passo <- fiv_passos[[j]] |>
+    mutate(
+      FIV = format(round(FIV, 2), big.mark = ".", decimal.mark = ",", nsmall = 2),
+      Decisão = if_else(coalesce(removido, FALSE), "retirar", "")
+    ) |>
+    select(Variável, FIV, Decisão)
+
+  titulo <- if (j < length(fiv_passos)) {
+    paste0("Passo ", j, " · retirar ", fiv_passos[[j]]$Variável[fiv_passos[[j]]$removido])
+  } else {
+    paste0("Passo ", j, " · FIV máximo ≤ 5")
+  }
+
+  cat('<div class="fiv-card">')
+  cat('<div class="fiv-title">', titulo, '</div>')
+  cat(knitr::kable(passo, format = "html", align = "lcc",
+                   table.attr = 'class="tabela-tema tabela-fiv"'))
+  cat('</div>')
+}
+cat('</div>')
+```
+
+# Transformação e seleção
+
+## Box-Cox: transformação da resposta
+
+:::: {.columns}
+
+::: {.column width="72%"}
+
+```{r}
+#| fig-align: center
+#| out-width: "100%"
+#| fig-height: 5.6
+lambda_otimo <- obj$resumo_modelo$lambda_boxcox
+ggplot(boxcox_df, aes(lambda, log_verossimilhanca)) +
+  geom_line(color = "#7dd3fc", linewidth = 1.1) +
+  geom_vline(xintercept = lambda_otimo, color = "#14b8a6",
+             linetype = "dashed", linewidth = 1) +
+  geom_vline(xintercept = 0, color = "#bfdbfe",
+             linetype = "dotted", linewidth = 0.9) +
+  annotate("text", x = lambda_otimo, y = max(boxcox_df$log_verossimilhanca),
+           label = paste0("λ = ", fmt_num(lambda_otimo, 2)),
+           color = "#7dd3fc", hjust = -0.15, vjust = -0.6, size = 4.2) +
+  labs(x = "Lambda", y = "Log-verossimilhança") +
+  tema_asteroides(12)
+```
 
 :::
 
 ::: {.column width="4%"}
 :::
 
-::: {.column width="39%"}
+::: {.column width="24%"}
 
-::: {.box-gold style="font-size:0.72em;"}
-[**Leitura**]{.underline}
+::: {.box-decision style="text-align:center; margin-top:35%;"}
 
-- Uma única variável já explica a maior parte da variação do diâmetro.
-- A **segunda** variável é o maior salto de ajuste.
-- A partir daí, cada termo extra acrescenta muito pouco.
+**λ próximo de zero**
+
+<div style="font-size:1.35em; margin-top:0.6em;">
+<code class="blue">log(diâmetro)</code>
+</div>
 
 :::
 
@@ -553,261 +629,303 @@ knitr::kable(sel_tab, align = "clcc", caption = "")
 
 ::::
 
-::: {.box-gold style="font-size:0.56em; margin-top:0.45em;"}
-
-```{r}
-metodos_tab <- tabela_metodos |>
-  transmute(
-    Método,
-    Termos,
-    `Preditores mantidos`,
-    AIC = fmt_num(AIC, 1),
-    BIC = fmt_num(BIC, 1),
-    `R² ajustado` = fmt_num(`R² ajustado`, 4)
-  )
-
-knitr::kable(metodos_tab, align = "lclccc", caption = "")
-```
-
-:::
-
-## LASSO & FIVs
+## Modelo após a transformação {style="font-size: 0.78em;"}
 
 :::: {.columns}
 
-::: {.column width="49%"}
-
-::: {.box-gold style="font-size:0.6em;"}
-[**LASSO (λ a 1 erro-padrão)**]{.underline}
+::: {.column width="43%"}
 
 ```{r}
-lasso_tab <- tabela_lasso |>
-  slice_head(n = 8) |>
-  transmute(
-    `Variável`,
-    `|coef.|` = fmt_num(`Coeficiente máximo em módulo`, 4),
-    `Termos`  = `Termos não nulos`
-  )
+#| results: asis
+saida_pre(summary(modelo_reduzido), "output-modelo-reduzido")
+```
 
-knitr::kable(lasso_tab, align = "lcc", caption = "")
+```{r}
+#| results: asis
+saida_pre(anova(modelo_reduzido), "output-anova-reduzido")
 ```
 
 :::
 
+::: {.column width="2%"}
 :::
 
-::: {.column width="3%"}
+::: {.column width="55%"}
+
+```{r}
+#| fig-align: center
+#| out-width: "100%"
+#| fig-height: 5.9
+diag_reduzido <- diagnosticos_modelo(modelo_reduzido, 7.7)
+gridExtra::grid.arrange(
+  diag_reduzido$residuos, diag_reduzido$qq,
+  diag_reduzido$escala, diag_reduzido$influencia,
+  ncol = 2
+)
+```
+
+:::
+
+::::
+
+## Seleção forward por ganho de R² ajustado {style="font-size: 0.76em;"}
+
+:::: {.columns}
+
+::: {.column width="48%"}
+
+```{r}
+#| results: asis
+forward_tab <- forward_path |>
+  mutate(
+    `Variável incluída` = `Variável incluída`,
+    `R² ajustado` = fmt_num(`R² ajustado`, 4),
+    `Ganho (p.p.)` = fmt_num(100 * Ganho, 2),
+    Decisão = if_else(Passo <= obj$selecoes$forward_n_selec, "manter", "parar antes")
+  ) |>
+  select(Passo, `Variável incluída`, `R² ajustado`, `Ganho (p.p.)`, Decisão)
+
+knitr::kable(
+  forward_tab,
+  format = "html",
+  align = "clccc",
+  table.attr = 'class="tabela-tema tabela-forward"'
+)
+```
+
+:::
+
+::: {.column width="4%"}
 :::
 
 ::: {.column width="48%"}
 
-::: {.box-gold style="font-size:0.6em;"}
-[**FIV no bloco numérico**]{.underline}
-
 ```{r}
-fiv_tab <- tabela_fiv |>
-  slice_head(n = 9) |>
-  mutate(`FIV` = fmt_num(`FIV`, 2))
+#| fig-align: center
+#| out-width: "100%"
+#| fig-height: 6.5
+forward_plot <- forward_path |>
+  mutate(
+    ganho_pp = 100 * Ganho,
+    selecionado = Passo <= obj$selecoes$forward_n_selec
+  )
 
-knitr::kable(fiv_tab, align = "lc", caption = "")
+ggplot(forward_plot, aes(Passo, ganho_pp, fill = selecionado)) +
+  geom_col(width = 0.72) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "#f87171", linewidth = 0.8) +
+  annotate("text", x = 7.9, y = 1.8, label = "limiar = 1 p.p.",
+           color = "#fca5a5", hjust = 1, size = 3.6) +
+  scale_fill_manual(values = c(`TRUE` = "#14b8a6", `FALSE` = "#1d4ed8")) +
+  scale_x_continuous(breaks = forward_plot$Passo) +
+  labs(x = "Passo do forward", y = "Ganho no R² ajustado (p.p.)") +
+  tema_asteroides(12)
 ```
-
-:::
 
 :::
 
 ::::
 
-::: {.box-decision style="font-size:0.68em; margin-top:0.5em; text-align:center;"}
-Vários elementos orbitais (tamanho, período, velocidade angular) são quase redundantes entre si — **FIVs altíssimos**. Somados à parcimônia dos critérios, isso aponta para um modelo enxuto com **duas variáveis**.
-:::
+## Albedo: escala original ou logarítmica?
+
+```{r}
+#| fig-align: center
+#| out-width: "100%"
+#| out-height: "82%"
+#| fig-height: 5.8
+p_albedo_logdiam <- ggplot(df_plot, aes(albedo, log_diametro)) +
+  geom_point(alpha = 0.16, size = 0.65, color = "#7dd3fc") +
+  geom_smooth(method = "lm", se = FALSE, color = "#38bdf8", linewidth = 0.85) +
+  labs(title = "Albedo", x = "albedo", y = "log(diâmetro)") +
+  tema_asteroides(12)
+
+p_logalbedo_logdiam <- ggplot(df_plot, aes(log_albedo, log_diametro)) +
+  geom_point(alpha = 0.16, size = 0.65, color = "#7dd3fc") +
+  geom_smooth(method = "lm", se = FALSE, color = "#14b8a6", linewidth = 0.85) +
+  labs(title = "log(albedo)", x = "log(albedo)", y = "log(diâmetro)") +
+  tema_asteroides(12)
+
+gridExtra::grid.arrange(p_albedo_logdiam, p_logalbedo_logdiam, ncol = 2)
+```
 
 # Modelo final
 
 ## Modelo final
 
-::: {.box-decision style="text-align:center; font-size:0.8em; margin-bottom:0.7em;"}
+::: {.box-decision style="text-align:center; font-size:0.76em; margin-bottom:0.55em;"}
+
 <div style="font-size:1.12em;">
 <code class="blue">log(diâmetro)</code> = β₀ + β₁ · <code class="navy">magnitude absoluta</code> + β₂ · <code class="navy">log(albedo)</code> + ε
 </div>
+
 :::
 
 :::: {.columns}
 
-::: {.column width="48%"}
+::: {.column width="49%"}
 
 ```{r}
-#| echo: true
-#| class-output: scroll-output
-summary(modelo)
+#| results: asis
+saida_pre(summary(modelo), "output-modelo-final")
 ```
 
 :::
 
-::: {.column width="4%"}
+::: {.column width="2%"}
 :::
 
-::: {.column width="48%"}
+::: {.column width="49%"}
 
 ```{r}
-#| echo: true
-anova(modelo)
+#| results: asis
+saida_pre(anova(modelo), "output-anova-final")
 ```
 
 :::
 
 ::::
 
-## Modelo final: interpretação
-
-:::: {.columns}
-
-::: {.column width="38%"}
-
-::: {.box-gold style="font-size:0.74em; text-align:center;"}
-[**Ajuste**]{.underline}
-
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.55em; margin:0.7em 0;">
-  <div><strong style="font-size:2em; color:#7dd3fc;">`r fmt_num(summary(modelo)$adj.r.squared)`</strong><br>R² ajustado</div>
-  <div><strong style="font-size:2em; color:#7dd3fc;">`r fmt_num(max(car::vif(modelo)), 2)`</strong><br>FIV máximo</div>
-</div>
-
-`r fmt_int(obj$resumo_modelo$n_modelo)` asteroides.
-
-:::
-
-:::
-
-::: {.column width="4%"}
-:::
-
-::: {.column width="58%"}
-
-::: {.box-gold style="font-size:0.7em;"}
-[**Coeficientes**]{.underline}
-
-```{r}
-coef_tab <- as.data.frame(coef(summary(modelo))) |>
-  rownames_to_column("Termo") |>
-  filter(Termo != "(Intercept)") |>
-  transmute(
-    Termo = dplyr::recode(Termo,
-      "magnitude_absoluta" = "Magnitude absoluta",
-      "log_albedo"         = "log(albedo)"),
-    Estimativa = fmt_num(Estimate, 4),
-    `p-valor`  = if_else(`Pr(>|t|)` < 0.001, "< 0,001", fmt_num(`Pr(>|t|)`, 4))
-  )
-
-knitr::kable(coef_tab, align = "lcc", caption = "")
-```
-
-Os sinais são coerentes: objetos **menos brilhantes** (magnitude maior) tendem a ser **menores**; e, para um mesmo brilho, superfícies **mais refletivas** (albedo maior) indicam diâmetro menor.
-
-:::
-
-:::
-
-::::
-
-::: {.box-copper style="font-size:0.64em; margin-top:0.5em;"}
-A seleção, guiada pelos dados, reencontra a relação astronômica clássica $D \approx 1329 \cdot 10^{-H/5} / \sqrt{\text{albedo}}$ (**Pravec & Harris, 2007**; CNEOS/JPL) — sem partir dela.
-:::
-
-# Diagnóstico
-
-## Resíduos
+## Diagnóstico do modelo final
 
 ```{r}
 #| fig-align: center
 #| out-width: "100%"
-#| out-height: "80%"
-h     <- hatvalues(modelo)
-rstud <- rstudent(modelo)
-cook  <- cooks.distance(modelo)
+#| out-height: "84%"
+#| fig-height: 6.2
+diag_final <- diagnosticos_modelo(modelo, 8.5)
+gridExtra::grid.arrange(
+  diag_final$residuos, diag_final$qq,
+  diag_final$escala, diag_final$influencia,
+  ncol = 2
+)
+```
 
-p <- length(coef(modelo))
-n <- nobs(modelo)
+## Alavanca e influência no modelo final
 
-limite_leverage <- (2 * p) / n
-limite_cook     <- 4 / n
+:::: {.columns}
 
-df_diag <- tibble(
-  obs    = seq_len(n),
-  rstud  = rstud,
-  h      = h,
-  cook   = cook,
-  fitted = fitted(modelo)
+::: {.column width="72%"}
+
+```{r}
+#| fig-align: center
+#| out-width: "100%"
+#| fig-height: 5.7
+diag_final$influencia +
+  geom_point(
+    data = diag_final$dados |> filter(cook > diag_final$limite_cook),
+    color = "#f87171", alpha = 0.42, size = 0.75
+  ) +
+  labs(
+    subtitle = paste0(
+      "azul: demais observações · vermelho: Cook > ",
+      signif(diag_final$limite_cook, 2)
+    )
+  )
+```
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="24%"}
+
+```{r}
+#| results: asis
+influencia_tab <- tibble(
+  Critério = c("|resíduo studentizado| > 3", "Leverage acima do limite", "Cook acima do limite"),
+  Observações = c(
+    sum(abs(diag_final$dados$rstud) > 3),
+    sum(diag_final$dados$h > diag_final$limite_h),
+    sum(diag_final$dados$cook > diag_final$limite_cook)
+  )
+) |>
+  mutate(Observações = fmt_int(Observações))
+
+knitr::kable(
+  influencia_tab,
+  format = "html",
+  align = "lc",
+  table.attr = 'class="tabela-tema tabela-influencia"'
+)
+```
+
+:::
+
+::::
+
+## Testes dos pressupostos
+
+```{r}
+#| include: false
+residuos_finais <- residuals(modelo)
+residuos_padronizados <- as.numeric(scale(residuos_finais))
+
+teste_ks <- suppressWarnings(ks.test(residuos_padronizados, "pnorm", exact = FALSE))
+idx_shapiro <- unique(round(seq(1, length(residuos_finais), length.out = 5000)))
+teste_shapiro <- shapiro.test(residuos_finais[idx_shapiro])
+teste_bp <- lmtest::bptest(modelo)
+
+base_white <- df_modelo |>
+  transmute(
+    residuo2 = residuos_finais^2,
+    H = magnitude_absoluta,
+    L = log_albedo
+  )
+aux_white <- lm(residuo2 ~ H + L + I(H^2) + I(L^2) + I(H * L), data = base_white)
+white_gl <- 5
+white_estatistica <- nrow(base_white) * summary(aux_white)$r.squared
+white_p <- pchisq(white_estatistica, df = white_gl, lower.tail = FALSE)
+```
+
+```{r}
+#| results: asis
+testes_tab <- tibble(
+  Pressuposto = c("Normalidade", "Normalidade", "Homogeneidade", "Homogeneidade"),
+  Teste = c("Kolmogorov–Smirnov", "Shapiro–Wilk (n = 5.000)", "Breusch–Pagan", "White"),
+  `Hipótese nula` = c(
+    "Resíduos seguem distribuição normal",
+    "Resíduos seguem distribuição normal",
+    "Variância dos resíduos é constante",
+    "Variância dos resíduos é constante"
+  ),
+  Estatística = c(
+    fmt_num(unname(teste_ks$statistic), 4),
+    fmt_num(unname(teste_shapiro$statistic), 4),
+    fmt_num(unname(teste_bp$statistic), 2),
+    fmt_num(white_estatistica, 2)
+  ),
+  `p-valor` = c(fmt_p(teste_ks$p.value), fmt_p(teste_shapiro$p.value),
+                fmt_p(teste_bp$p.value), fmt_p(white_p)),
+  Decisão = c(
+    "Rejeitar H₀: resíduos não normais",
+    "Rejeitar H₀: resíduos não normais",
+    "Rejeitar H₀: há heterocedasticidade",
+    "Rejeitar H₀: há heterocedasticidade"
+  )
 )
 
-ggplot(df_diag, aes(x = fitted, y = rstud)) +
-  geom_point(alpha = 0.18, size = 0.8, color = "#7dd3fc") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "#cbd5e1", linewidth = 0.5) +
-  geom_hline(yintercept = c(-3, 3), linetype = "dashed", color = "#60a5fa", linewidth = 0.9) +
-  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"),
-              color = "#60a5fa", se = FALSE, linewidth = 0.8) +
-  labs(x = "Valores ajustados", y = "Resíduo studentizado") +
-  tema_asteroides()
+knitr::kable(
+  testes_tab,
+  format = "html",
+  align = "lllccl",
+  table.attr = 'class="tabela-tema tabela-testes"'
+)
 ```
 
-## QQ-plot
+::: {.box-limit style="font-size:0.68em; text-align:center; margin-top:0.55em;"}
 
-```{r}
-#| fig-align: center
-#| out-width: "100%"
-#| out-height: "80%"
-ggplot(data.frame(rstud = rstudent(modelo)), aes(sample = rstud)) +
-  stat_qq_band(fill = "#38bdf8", alpha = 0.25) +
-  stat_qq_line(color = "#60a5fa", linewidth = 1) +
-  stat_qq_point(color = "#7dd3fc", size = 0.9, alpha = 0.5) +
-  labs(x = "Quantis teóricos", y = "Quantis amostrais") +
-  tema_asteroides()
-```
+Os testes e os gráficos concordam: o modelo é forte para **explicação e previsão**, mas normalidade e homogeneidade não são plenamente atendidas para inferência clássica estrita.
 
-## Alavanca & influência
-
-```{r}
-#| fig-align: center
-#| out-width: "100%"
-#| out-height: "80%"
-h_seq <- seq(min(df_diag$h[df_diag$h > 0]), max(df_diag$h) * 1.02, length.out = 200)
-
-curva_cook <- function(cook_level, h_seq, p) {
-  sqrt(cook_level * p * (1 - h_seq) / h_seq)
-}
-
-df_curvas <- tibble(h = h_seq) |>
-  mutate(
-    cook_lim_pos =  curva_cook(limite_cook, h, p),
-    cook_lim_neg = -curva_cook(limite_cook, h, p)
-  ) |>
-  filter(cook_lim_pos < 12)
-
-ggplot(df_diag, aes(x = h, y = rstud)) +
-  geom_point(alpha = 0.18, size = 0.8, color = "#7dd3fc") +
-  geom_hline(yintercept = 0, linetype = "dotted", color = "#cbd5e1", linewidth = 0.5) +
-  geom_vline(xintercept = limite_leverage, linetype = "dashed", color = "#60a5fa", linewidth = 0.8) +
-  geom_line(data = df_curvas, aes(x = h, y = cook_lim_pos),
-            color = "#60a5fa", linetype = "dashed", linewidth = 0.8, inherit.aes = FALSE) +
-  geom_line(data = df_curvas, aes(x = h, y = cook_lim_neg),
-            color = "#60a5fa", linetype = "dashed", linewidth = 0.8, inherit.aes = FALSE) +
-  coord_cartesian(ylim = range(df_diag$rstud) * 1.05) +
-  labs(x = "Leverage (hii)", y = "Resíduo studentizado") +
-  tema_asteroides()
-```
+:::
 
 # Conclusão
 
 ## Conclusão
 
-```{r}
-bp     <- bptest(modelo)
-dw     <- dwtest(modelo)
-sh_idx <- unique(round(seq(1, length(residuals(modelo)), length.out = 5000)))
-sh     <- shapiro.test(residuals(modelo)[sh_idx])
-```
+::: {.box-decision style="font-size:0.76em; text-align:center; margin-bottom:0.65em;"}
 
-::: {.box-decision style="font-size:0.76em; margin-bottom:0.65em;"}
-Sim: na escala logarítmica, **duas variáveis** explicam cerca de **`r fmt_num(100 * summary(modelo)$adj.r.squared, 1)`%** da variação do diâmetro entre os asteroides com dados completos. O ajuste é forte e a relação é interpretável — mas os resíduos lembram que a base reúne objetos muito diferentes.
+Na escala logarítmica, duas variáveis explicam cerca de **`r fmt_num(100 * summary(modelo)$adj.r.squared, 1)`%** da variação do diâmetro entre os asteroides com dados completos.
+
 :::
 
 :::: {.columns}
@@ -815,13 +933,12 @@ Sim: na escala logarítmica, **duas variáveis** explicam cerca de **`r fmt_num(
 ::: {.column width="48%"}
 
 ::: {.box-gold style="font-size:0.74em;"}
-[**O que fica de pé**]{.underline}
+[**O que permanece**]{.underline}
 
-- Resposta modelada: `log(diâmetro)`.
-- Modelo escolhido pelos dados e por parcimônia.
-- R² ajustado: `r fmt_num(summary(modelo)$adj.r.squared)`.
-- FIV máximo: `r fmt_num(max(car::vif(modelo)), 2)` (sem multicolinearidade).
-- O resultado coincide com a relação astronômica conhecida.
+- O forward foi interrompido quando o ganho caiu abaixo de 1 ponto percentual.
+- O modelo final é simples, parcimonioso e interpretável.
+- O resultado recupera a relação astronômica conhecida sem partir dela.
+- Não há multicolinearidade relevante no modelo final.
 
 :::
 
@@ -835,11 +952,10 @@ Sim: na escala logarítmica, **duas variáveis** explicam cerca de **`r fmt_num(
 ::: {.box-limit style="font-size:0.74em;"}
 [**Onde ter cautela**]{.underline}
 
-- Breusch-Pagan: p-valor `< 0,001` (heterocedasticidade).
-- Shapiro-Wilk (amostra): p-valor `< 0,001`.
-- QQ-plot com caudas mais pesadas que a normal.
-- Durbin-Watson: `r fmt_num(unname(dw$statistic), 3)`, sem ordem temporal real — interpretado com cautela.
-- Forte para **previsão**; limitado para **inferência** estrita.
+- Os resíduos não apresentam normalidade estrita.
+- Há evidência de heterocedasticidade.
+- A base é transversal; não há ordem temporal natural entre as linhas.
+- Pontos influentes representam asteroides reais e foram mantidos.
 
 :::
 
@@ -847,19 +963,19 @@ Sim: na escala logarítmica, **duas variáveis** explicam cerca de **`r fmt_num(
 
 ::::
 
-# Referências {.glass style="font-size: 0.6em;"}
+# Referências {.glass style="font-size: 0.58em;"}
 
-- MASIERO, Joseph R. et al. **Main Belt Asteroids with WISE/NEOWISE. I. Preliminary Albedos and Diameters.** The Astrophysical Journal, v. 741, n. 2, p. 68, 2011.
+- HOSSAIN, Mir Sakhawat; ZABED, Md. Akib. **Machine Learning Approaches for Classification and Diameter Prediction of Asteroids.** In: *Proceedings of International Conference on Information and Communication Technology for Development*, p. 43–55, 2023. DOI: 10.1007/978-981-19-7528-8_4.
 
-- MAINZER, Amy K. et al. **NEOWISE Observations of Near-Earth Objects: Preliminary Results.** The Astrophysical Journal, v. 743, n. 2, p. 156, 2011.
+- MASIERO, Joseph R. et al. **Main Belt Asteroids with WISE/NEOWISE. I. Preliminary Albedos and Diameters.** *The Astrophysical Journal*, v. 741, n. 2, art. 68, 2011. DOI: 10.1088/0004-637X/741/2/68.
 
-- PRAVEC, Petr; HARRIS, Alan W. **Binary asteroid population 1. Angular momentum content.** Icarus, v. 190, n. 1, p. 250-259, 2007.
+- PRAVEC, Petr; HARRIS, Alan W. **Binary asteroid population 1. Angular momentum content.** *Icarus*, v. 190, n. 1, p. 250–259, 2007. DOI: 10.1016/j.icarus.2007.02.023.
 
-- HOSSAIN, Mir Sakhawat et al. **Machine Learning Approaches for Classification and Diameter Prediction of Asteroids.** 2023.
+- NASA/JPL. **Small-Body Database Query.** Disponível em: https://ssd.jpl.nasa.gov/tools/sbdb_query.html.
 
-- NASA/JPL. **Small-Body Database Query.** Disponível em: https://ssd.jpl.nasa.gov/tools/sbdb_query.html
+- NASA/JPL. **Why Study Asteroids?** Disponível em: https://ssd.jpl.nasa.gov/sb/why_asteroids.html.
 
-- NASA/JPL. **Why Study Asteroids?** Disponível em: https://ssd.jpl.nasa.gov/sb/why_asteroids.html
+- NASA/CNEOS. **Asteroid Size Estimator.** Disponível em: https://cneos.jpl.nasa.gov/tools/ast_size_est.html.
 
 - ALMEIDA, Núbia Karla de Oliveira. **Caderno de Anotações de Modelos Lineares 1: Graduação em Estatística.** Niterói: Universidade Federal Fluminense, 2025.
 

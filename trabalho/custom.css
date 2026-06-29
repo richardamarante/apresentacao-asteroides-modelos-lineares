@@ -15,9 +15,9 @@
   background-color: #08111f;
 }
 
-/* ==== Slide de título ==== */
+/* ==== Slide de título (centralizado, como a referência) ==== */
 #title-slide {
-  text-align: left;
+  text-align: center;
 }
 #title-slide::before {
   display: none;
@@ -28,57 +28,41 @@
 }
 #title-slide .title {
   color: #f8fbff;
-  font-size: 2.34em;
+  font-size: 2.4em;
   font-weight: 800;
-  transform: translateY(-16px);
-  line-height: 1.08;
-  max-width: 720px;
-  margin-left: 0.7em;
-  text-align: left;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.68);
+  line-height: 1.1;
+  transform: translateY(8px);
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.72);
 }
 #title-slide .subtitle {
   color: #7dd3fc;
-  font-size: 1.18em;
+  font-size: 1.2em;
   font-weight: 350;
-  margin-top: 0.44em;
-  margin-left: 1.44em;
-  text-align: left;
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.68);
+  margin-top: 0.5em;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.72);
 }
-#title-slide .quarto-title-authors {
-  display: block;
-  width: auto;
-  margin-left: 1.70em;
-  margin-top: 1.10em;
-}
-#title-slide .quarto-title-author {
-  margin: 0;
-  padding: 0;
-  text-align: left;
-}
-#title-slide .quarto-title-author-name,
+#title-slide .quarto-title-authors,
 #title-slide .author {
+  display: block;
+  width: 100%;
+  text-align: center;
   color: #f8fbff;
   font-size: 0.72em;
-  text-align: left;
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.70);
+  margin-top: 1em;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.74);
 }
 #title-slide .quarto-title-affiliation,
 #title-slide .institute {
   color: #cbd5e1;
   font-size: 0.56em;
   font-style: italic;
-  text-align: left;
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.70);
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.74);
 }
 #title-slide .date {
   color: #93c5fd;
-  font-size: 0.54em;
-  transform: translateY(-4px);
-  margin-left: 3.16em;
-  text-align: left;
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.70);
+  font-size: 0.55em;
+  transform: translateY(-6px);
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.74);
 }
 
 /* ===== Títulos ===== */
@@ -393,3 +377,104 @@ code.blue {
   text-decoration-color: #38bdf8;
   text-underline-offset: 0.18em;
 }
+
+/* ===== Saídas compactas dos modelos ===== */
+.output-mini,
+.output-modelo-cheio,
+.output-anova-cheio,
+.output-modelo-reduzido,
+.output-anova-reduzido,
+.output-modelo-final,
+.output-anova-final {
+  margin: 0 0 0.38em;
+  padding: 0.48em 0.62em;
+  overflow: hidden;
+  white-space: pre;
+  color: #dbeafe;
+  background: #071323;
+  border: 1px solid rgba(56, 189, 248, 0.42);
+  border-radius: 6px;
+  line-height: 1.18;
+}
+.output-modelo-cheio { font-size: 0.31em; }
+.output-anova-cheio { font-size: 0.27em; }
+.output-modelo-reduzido { font-size: 0.30em; }
+.output-anova-reduzido { font-size: 0.27em; }
+.output-modelo-final { font-size: 0.48em; }
+.output-anova-final { font-size: 0.43em; }
+
+/* ===== Quatro etapas de FIV no mesmo slide ===== */
+.fiv-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.42em;
+  align-items: start;
+}
+.fiv-card {
+  min-width: 0;
+  padding: 0.28em;
+  background: rgba(56, 189, 248, 0.06);
+  border: 1px solid rgba(56, 189, 248, 0.30);
+  border-radius: 7px;
+}
+.fiv-title {
+  min-height: 2.35em;
+  margin-bottom: 0.30em;
+  color: #7dd3fc;
+  font-size: 0.48em;
+  font-weight: 700;
+  line-height: 1.18;
+  text-align: center;
+}
+.reveal table.tabela-fiv {
+  font-size: 0.53em;
+  table-layout: fixed;
+}
+.reveal table.tabela-fiv th,
+.reveal table.tabela-fiv td {
+  padding: 7px 4px;
+  line-height: 1.08;
+}
+.reveal table.tabela-fiv th:nth-child(1),
+.reveal table.tabela-fiv td:nth-child(1) { width: 57%; }
+.reveal table.tabela-fiv th:nth-child(2),
+.reveal table.tabela-fiv td:nth-child(2) { width: 25%; text-align: right; }
+.reveal table.tabela-fiv th:nth-child(3),
+.reveal table.tabela-fiv td:nth-child(3) { width: 18%; color: #fca5a5; }
+
+.reveal table.tabela-forward {
+  font-size: 0.61em;
+}
+.reveal table.tabela-forward th,
+.reveal table.tabela-forward td {
+  padding: 8px 6px;
+}
+.reveal table.tabela-testes {
+  font-size: 0.64em;
+}
+.reveal table.tabela-testes th,
+.reveal table.tabela-testes td {
+  padding: 9px 8px;
+  line-height: 1.22;
+}
+.reveal table.tabela-influencia {
+  margin-top: 3.2em;
+  font-size: 0.54em;
+}
+
+/* Dicionário completo em um único quadro, sem exigir rolagem durante a fala. */
+.reveal table.tabela-dicionario {
+  font-size: 0.39em;
+  table-layout: fixed;
+}
+.reveal table.tabela-dicionario th,
+.reveal table.tabela-dicionario td {
+  padding: 3px 5px;
+  line-height: 1.05;
+}
+.reveal table.tabela-dicionario th:nth-child(1),
+.reveal table.tabela-dicionario td:nth-child(1) { width: 31%; }
+.reveal table.tabela-dicionario th:nth-child(2),
+.reveal table.tabela-dicionario td:nth-child(2) { width: 22%; }
+.reveal table.tabela-dicionario th:nth-child(3),
+.reveal table.tabela-dicionario td:nth-child(3) { width: 47%; }

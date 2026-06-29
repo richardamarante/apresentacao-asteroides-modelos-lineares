@@ -4,112 +4,126 @@
     "href": "trabalho/index.html#introdução-1",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
     "section": "1.1 Introdução",
-    "text": "1.1 Introdução\n\n\n\nO que são asteroides?\n\nCorpos rochosos que sobraram da formação do Sistema Solar.\nA maioria vive no cinturão principal, entre Marte e Júpiter.\nAlguns se aproximam da Terra (NEOs) e poucos oferecem risco real (PHAs).\n\n\n\n\nPor que estudá-los?\n\nGuardam pistas químicas de como a Terra se formou há ~4,6 bilhões de anos.\nEstão na origem de boa parte dos meteoritos.\nImportam para defesa planetária e para o estudo de recursos minerais.\n\n\n\n\n\n\nO problema\n\nA base do JPL reúne mais de 1.552.892 asteroides.\nMas o diâmetro só foi medido para uma fração: 91,0% dos registros não têm tamanho conhecido.\nMedir tamanho diretamente é caro: exige observação térmica, radar ou ocultação.\n\n\n\n\nA pergunta\nCom as variáveis já disponíveis na base, é possível estimar o diâmetro de um asteroide por meio de um modelo de regressão linear?"
-  },
-  {
-    "objectID": "trabalho/index.html#na-literatura",
-    "href": "trabalho/index.html#na-literatura",
-    "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "1.2 Na literatura",
-    "text": "1.2 Na literatura\n\n\n\nMedir o tamanho é difícil\n\nMasiero et al. (2011) — o levantamento WISE/NEOWISE estimou diâmetros e albedos de mais de 100 mil asteroides do cinturão por modelagem térmica.\nMainzer et al. (2011) — diâmetros derivados do infravermelho têm incerteza típica de ~10%, e cobrem só uma parcela pequena da população.\n\n\n\n\n\n\nEstimar a partir de dados\n\nPravec & Harris (2007) — há uma relação física clássica ligando o tamanho a grandezas observacionais do objeto.\nHossain et al. (2023) — compararam regressão linear, random forest e XGBoost para prever o diâmetro a partir de parâmetros da própria base do JPL; poucas variáveis concentraram o poder preditivo.\n\n\n\n\nNosso trabalho repete esse caminho com as ferramentas de Modelos Lineares I: explorar, transformar, selecionar e diagnosticar — deixando os dados indicarem o modelo."
+    "text": "1.1 Introdução\n\n\n\nO que são asteroides?\n\nCorpos rochosos que sobraram da formação do Sistema Solar.\nA maioria vive no cinturão principal, entre Marte e Júpiter.\nAlguns se aproximam da Terra (NEOs); poucos oferecem risco real (PHAs).\n\n\n\n\nPor que estudá-los?\n\nGuardam pistas de como a Terra se formou há ~4,6 bilhões de anos.\nEstão na origem de boa parte dos meteoritos.\nImportam para defesa planetária e estudo de recursos.\n\n\n\n\n\n\nO problema\nA base do JPL reúne 1.552.892 asteroides, mas o diâmetro só foi medido para uma fração: 91,0% dos registros não têm tamanho conhecido (medir exige observação térmica, radar ou ocultação).\n\nCom as variáveis disponíveis, dá para estimar o diâmetro por regressão linear?\n\n\n\n\nEstudos anteriores\n\nMasiero et al. (2011) — WISE/NEOWISE estimou diâmetros e albedos de &gt;100 mil asteroides.\nPravec & Harris (2007) — relação física clássica entre tamanho e grandezas observacionais.\nHossain et al. (2023) — regressão linear, random forest e XGBoost previram diâmetro a partir da base do JPL."
   },
   {
     "objectID": "trabalho/index.html#os-dados",
     "href": "trabalho/index.html#os-dados",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
     "section": "2.1 Os dados",
-    "text": "2.1 Os dados\n\n\n\nOrigem\n\nBase JPL Small-Body Database (NASA).\nColetada pela ferramenta pública SBDB Query.\nReúne medidas físicas, elementos orbitais e classificações dinâmicas.\n\n\n\n\nRecorte\n\n\n1.552.892asteroides\n\n\n16variáveis (12 num. + 4 cat.)\n\n\n41.931próximos da Terra (NEO)\n\n\n2.544potencialmente perigosos (PHA)\n\n\n138.084casos completos com diâmetro medido (a base do modelo)\n\n\n\n\n\n\n\nDicionário de variáveis\n\n\n\nVariável\nUnidade de medida\nDescrição\n\n\n\n\nnome_asteroide\n-\nIdentificação completa do asteroide.\n\n\nclasse_orbita\n-\nClasse orbital do asteroide, calculada a partir das características de sua órbita.\n\n\nneo\nsim/nao\nIndica se o asteroide é um objeto próximo da Terra (Near-Earth Object).\n\n\npha\nsim/nao\nIndica se o asteroide é classificado como potencialmente perigoso.\n\n\ndiametro\nkm\nDiâmetro efetivo do asteroide quando aproximado por uma esfera equivalente.\n\n\nmagnitude_absoluta\nmag\nMedida de brilho real do asteroide, onde valores menores indicam objetos com maior luminosidade.\n\n\nalbedo\nadimensional (0-1)\nCapacidade da superfície do asteroide de refletir luz.\n\n\nexcentricidade_orbita\nadimensional (0-1)\nMede o alongamento da órbita do asteroide.\n\n\ntamanho_orbita\nUA\nRepresenta o tamanho geral da órbita do asteroide por meio do semi-eixo maior.\n\n\ndistancia_perielio\nUA\nMenor distância da órbita do asteroide até o Sol.\n\n\ndistancia_afelio\nUA\nMaior distância da órbita do asteroide até o Sol.\n\n\ninclinacao_orbita\nGraus\nInclinação do plano orbital em relação ao plano de referência do Sistema Solar.\n\n\norientacao_orbita\nGraus\nOrientação do plano da órbita ao redor do Sol, através de sua posição orbital no espaço.\n\n\nperiodo_orbita\nDias\nTempo necessário para o asteroide completar uma órbita ao redor do Sol.\n\n\nvel_media_angular_orbita\nGraus/dia\nVelocidade angular média com que o asteroide percorre sua órbita.\n\n\ndist_minima_terra\nUA\nMenor distância geométrica possível entre a órbita da Terra e a órbita do asteroide."
+    "text": "2.1 Os dados\n\n\n\nOrigem\n\nBase JPL Small-Body Database (NASA).\nColetada pela ferramenta pública SBDB Query.\nMedidas físicas, elementos orbitais e classificações dinâmicas.\n\n\n\n\nRecorte\n\n\n1.552.892asteroides\n\n\n16variáveis (12 num. + 4 cat.)\n\n\n41.931próximos da Terra (NEO)\n\n\n2.544potencialmente perigosos (PHA)\n\n\n138.084casos completos com diâmetro medido (base do modelo)\n\n\n\n\n\n\n\nDicionário de variáveis\n\n\n\nVariável\nUnidade de medida\nDescrição\n\n\n\n\nnome_asteroide\n-\nIdentificação completa do asteroide.\n\n\nclasse_orbita\n-\nClasse orbital do asteroide, calculada a partir das características de sua órbita.\n\n\nneo\nsim/nao\nIndica se o asteroide é um objeto próximo da Terra (Near-Earth Object).\n\n\npha\nsim/nao\nIndica se o asteroide é classificado como potencialmente perigoso.\n\n\ndiametro\nkm\nDiâmetro efetivo do asteroide quando aproximado por uma esfera equivalente.\n\n\nmagnitude_absoluta\nmag\nMedida de brilho real do asteroide, onde valores menores indicam objetos com maior luminosidade.\n\n\nalbedo\nadimensional (0-1)\nCapacidade da superfície do asteroide de refletir luz.\n\n\nexcentricidade_orbita\nadimensional (0-1)\nMede o alongamento da órbita do asteroide.\n\n\ntamanho_orbita\nUA\nRepresenta o tamanho geral da órbita do asteroide por meio do semi-eixo maior.\n\n\ndistancia_perielio\nUA\nMenor distância da órbita do asteroide até o Sol.\n\n\ndistancia_afelio\nUA\nMaior distância da órbita do asteroide até o Sol.\n\n\ninclinacao_orbita\nGraus\nInclinação do plano orbital em relação ao plano de referência do Sistema Solar.\n\n\norientacao_orbita\nGraus\nOrientação do plano da órbita ao redor do Sol, através de sua posição orbital no espaço.\n\n\nperiodo_orbita\nDias\nTempo necessário para o asteroide completar uma órbita ao redor do Sol.\n\n\nvel_media_angular_orbita\nGraus/dia\nVelocidade angular média com que o asteroide percorre sua órbita.\n\n\ndist_minima_terra\nUA\nMenor distância geométrica possível entre a órbita da Terra e a órbita do asteroide."
   },
   {
     "objectID": "trabalho/index.html#metodologia",
     "href": "trabalho/index.html#metodologia",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
     "section": "2.2 Metodologia",
-    "text": "2.2 Metodologia\n\n\n\n\n1\n\n\nExploração\n\n\nausências, distribuições e dispersões\n\n\n\n\n→\n\n\n\n\n2\n\n\nTransformação\n\n\nescala da resposta via Box-Cox\n\n\n\n\n⇄\n\n\n\n\n3\n\n\nSeleção\n\n\nstepwise, LASSO, subconjuntos e FIV\n\n\n\n\n⇄\n\n\n\n\n4\n\n\nDiagnóstico\n\n\nresíduos, normalidade e influência\n\n\n\n\n\n\n\nVariáveis candidatas\n\nEntram todas as candidatas físicas, orbitais e categóricas. A seleção decide quais permanecem — não partimos de um palpite.\n\n\nmagnitude albedo excentricidade tamanho da órbita periélio afélio inclinação orientação período vel. angular dist. mínima classe orbital NEO PHA\n\n\n\n\n   \n\n\n\nVariável resposta\ndiâmetro\n\nem quilômetros"
+    "text": "2.2 Metodologia\n\n\n\n\n1\n\n\nAnálise descritiva\n\n\ndistribuições, dispersões e correlações\n\n\n\n\n→\n\n\n\n\n2\n\n\nAjuste & FIV\n\n\nprimeiro modelo e multicolinearidade\n\n\n\n\n⇄\n\n\n\n\n3\n\n\nBox-Cox & seleção\n\n\ntransformação e escolha de variáveis\n\n\n\n\n⇄\n\n\n\n\n4\n\n\nDiagnóstico\n\n\nresíduos, testes e influência\n\n\n\n\n\n\n\nVariáveis candidatas\n\nmagnitude albedo excentricidade tamanho da órbita periélio afélio inclinação orientação período vel. angular dist. mínima classe orbital NEO PHA\n\n\n\n\n   \n\n\n\nVariável resposta\ndiâmetro\n\nem quilômetros"
   },
   {
-    "objectID": "trabalho/index.html#valores-ausentes-classes",
-    "href": "trabalho/index.html#valores-ausentes-classes",
+    "objectID": "trabalho/index.html#análise-descritiva-distribuições",
+    "href": "trabalho/index.html#análise-descritiva-distribuições",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "3.1 Valores ausentes & classes",
-    "text": "3.1 Valores ausentes & classes\n\n\n\n\n\n\n\n\nVariável\nNAs\n% NAs\n\n\n\n\nalbedo\n1.414.431\n91,1%\n\n\ndiametro\n1.413.310\n91,0%\n\n\ndist_minima_terra\n33.174\n2,1%\n\n\nmagnitude_absoluta\n506\n0,0%\n\n\ndistancia_afelio\n5\n0,0%\n\n\nperiodo_orbita\n5\n0,0%\n\n\nnome_asteroide\n0\n0,0%\n\n\nclasse_orbita\n0\n0,0%\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nClasse orbital\nAsteroides\n\n\n\n\nMBA\n1.374.675\n\n\nOMB\n49.938\n\n\nIMB\n32.818\n\n\nMCA\n29.686\n\n\nAPO\n23.872\n\n\nTJN\n16.357\n\n\nAMO\n14.606\n\n\nTNO\n6.293\n\n\n\n\n\n\n\n\nO diâmetro falta em 91,0% dos registros. A modelagem segue no subconjunto de 138.084 asteroides com diâmetro medido e demais variáveis completas."
+    "section": "3.1 Análise descritiva: distribuições",
+    "text": "3.1 Análise descritiva: distribuições"
   },
   {
-    "objectID": "trabalho/index.html#transformação-da-resposta",
-    "href": "trabalho/index.html#transformação-da-resposta",
+    "objectID": "trabalho/index.html#análise-descritiva-relações-físicas",
+    "href": "trabalho/index.html#análise-descritiva-relações-físicas",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "3.2 Transformação da resposta",
-    "text": "3.2 Transformação da resposta\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPor que transformar\n\nO diâmetro é positivo e muito assimétrico (de metros a centenas de km).\nO Box-Cox atinge o máximo perto de 0,00.\nLambda próximo de zero aponta para a escala log(diâmetro).\n\n\n\n\nA transformação age sobre a resposta. As escalas dos preditores serão avaliadas pelos gráficos a seguir."
+    "section": "3.2 Análise descritiva: relações físicas",
+    "text": "3.2 Análise descritiva: relações físicas"
   },
   {
-    "objectID": "trabalho/index.html#dispersão-variáveis-físicas",
-    "href": "trabalho/index.html#dispersão-variáveis-físicas",
+    "objectID": "trabalho/index.html#análise-descritiva-órbita-e-classificação",
+    "href": "trabalho/index.html#análise-descritiva-órbita-e-classificação",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "3.3 Dispersão: variáveis físicas",
-    "text": "3.3 Dispersão: variáveis físicas"
+    "section": "3.3 Análise descritiva: órbita e classificação",
+    "text": "3.3 Análise descritiva: órbita e classificação"
   },
   {
-    "objectID": "trabalho/index.html#dispersão-órbita-e-classe",
-    "href": "trabalho/index.html#dispersão-órbita-e-classe",
+    "objectID": "trabalho/index.html#matriz-de-correlação-e-primeiro-ajuste",
+    "href": "trabalho/index.html#matriz-de-correlação-e-primeiro-ajuste",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "3.4 Dispersão: órbita e classe",
-    "text": "3.4 Dispersão: órbita e classe"
+    "section": "3.4 Matriz de correlação e primeiro ajuste",
+    "text": "3.4 Matriz de correlação e primeiro ajuste\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCall:\nlm(formula = diametro ~ magnitude_absoluta + albedo + excentricidade_orbita + \n    tamanho_orbita + distancia_perielio + distancia_afelio + \n    inclinacao_orbita + orientacao_orbita + periodo_orbita + \n    vel_media_angular_orbita + dist_minima_terra, data = df_modelo)\n\nResiduals:\n   Min     1Q Median     3Q    Max \n-58.29  -2.19  -0.55   1.43 884.11 \n\nCoefficients:\n                           Estimate Std. Error  t value Pr(&gt;|t|)    \n(Intercept)               3.212e+01  7.602e-01   42.254  &lt; 2e-16 ***\nmagnitude_absoluta       -4.194e+00  1.556e-02 -269.487  &lt; 2e-16 ***\nalbedo                   -2.263e+01  2.032e-01 -111.338  &lt; 2e-16 ***\nexcentricidade_orbita     3.025e+01  3.990e-01   75.809  &lt; 2e-16 ***\ntamanho_orbita           -1.498e+01  1.275e+01   -1.175   0.2400    \ndistancia_perielio        2.587e+01  6.404e+00    4.040 5.35e-05 ***\ndistancia_afelio          6.938e+00  6.375e+00    1.088   0.2765    \ninclinacao_orbita         5.846e-03  3.314e-03    1.764   0.0777 .  \norientacao_orbita         1.761e-05  1.844e-04    0.095   0.9239    \nperiodo_orbita            1.436e-04  9.714e-06   14.784  &lt; 2e-16 ***\nvel_media_angular_orbita  4.630e+01  5.173e-01   89.495  &lt; 2e-16 ***\ndist_minima_terra        -1.176e+01  5.571e-01  -21.101  &lt; 2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 7.036 on 138072 degrees of freedom\nMultiple R-squared:  0.4338,    Adjusted R-squared:  0.4338 \nF-statistic:  9617 on 11 and 138072 DF,  p-value: &lt; 2.2e-16\n\nAnalysis of Variance Table\n\nResponse: diametro\n                             Df  Sum Sq Mean Sq    F value Pr(&gt;F)    \nmagnitude_absoluta            1 3853181 3853181 77823.2185 &lt;2e-16 ***\nalbedo                        1  738476  738476 14915.0990 &lt;2e-16 ***\nexcentricidade_orbita         1   98820   98820  1995.8713 &lt;2e-16 ***\ntamanho_orbita                1   10719   10719   216.4925 &lt;2e-16 ***\ndistancia_perielio            1   96496   96496  1948.9380 &lt;2e-16 ***\ndistancia_afelio              1      89      89     1.7994 0.1798    \ninclinacao_orbita             1    7081    7081   143.0232 &lt;2e-16 ***\norientacao_orbita             1      22      22     0.4461 0.5042    \nperiodo_orbita                1   21779   21779   439.8758 &lt;2e-16 ***\nvel_media_angular_orbita      1  389180  389180  7860.3291 &lt;2e-16 ***\ndist_minima_terra             1   22046   22046   445.2661 &lt;2e-16 ***\nResiduals                138072 6836217      50                      \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
   },
   {
-    "objectID": "trabalho/index.html#seleção-de-variáveis",
-    "href": "trabalho/index.html#seleção-de-variáveis",
+    "objectID": "trabalho/index.html#diagnóstico-do-primeiro-modelo",
+    "href": "trabalho/index.html#diagnóstico-do-primeiro-modelo",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "3.5 Seleção de variáveis",
-    "text": "3.5 Seleção de variáveis\n\n\n\nMelhores subconjuntos\n\n\n\n\n\n\n\n\n\n\n\nNúmero de preditores\nPreditores selecionados\nBIC\nR² ajustado\n\n\n\n\n1\nMagnitude absoluta\n-60874,6\n0,7042\n\n\n2\nMagnitude absoluta, log(albedo)\n-158271,6\n0,9578\n\n\n3\nMagnitude absoluta, log(albedo), log(tamanho da órbita)\n-161070,8\n0,9601\n\n\n4\nMagnitude absoluta, log(albedo), Velocidade angular média, log(distância mínima à Terra)\n-161526,1\n0,9605\n\n\n5\nMagnitude absoluta, log(albedo), Inclinação, Velocidade angular média + 1 outros\n-161680,9\n0,9606\n\n\n6\nMagnitude absoluta, log(albedo), Distância do periélio, Inclinação + 2 outros\n-161778,2\n0,9607\n\n\n\n\n\n\n\n\n\n\nLeitura\n\nUma única variável já explica a maior parte da variação do diâmetro.\nA segunda variável é o maior salto de ajuste.\nA partir daí, cada termo extra acrescenta muito pouco.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMétodo\nTermos\nPreditores mantidos\nAIC\nBIC\nR² ajustado\n\n\n\n\nAIC forward\n12\nMagnitude absoluta, log(albedo), Velocidade angular média + 9 outros\n-174447,1\n-174240,5\n0,9609\n\n\nAIC backward\n11\nMagnitude absoluta, log(albedo), Excentricidade + 8 outros\n-174448,7\n-174252,0\n0,9609\n\n\nAIC stepwise\n11\nMagnitude absoluta, log(albedo), Classe orbital + 8 outros\n-174448,7\n-174252,0\n0,9609\n\n\nBIC forward\n11\nMagnitude absoluta, log(albedo), Velocidade angular média + 8 outros\n-174442,8\n-174246,1\n0,9609\n\n\nBIC backward\n10\nMagnitude absoluta, log(albedo), Excentricidade + 7 outros\n-174444,8\n-174257,9\n0,9609\n\n\nBIC stepwise\n8\nMagnitude absoluta, log(albedo), Classe orbital + 5 outros\n-174421,4\n-174254,2\n0,9609\n\n\np-valor backward\n12\nMagnitude absoluta, log(albedo), Excentricidade + 9 outros\n-174448,7\n-174252,0\n0,9609"
+    "section": "3.5 Diagnóstico do primeiro modelo",
+    "text": "3.5 Diagnóstico do primeiro modelo"
   },
   {
-    "objectID": "trabalho/index.html#lasso-fivs",
-    "href": "trabalho/index.html#lasso-fivs",
+    "objectID": "trabalho/index.html#multicolinearidade-remoção-por-fiv",
+    "href": "trabalho/index.html#multicolinearidade-remoção-por-fiv",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "3.6 LASSO & FIVs",
-    "text": "3.6 LASSO & FIVs\n\n\n\nLASSO (λ a 1 erro-padrão)\n\n\n\n\n\nVariável\n|coef.|\nTermos\n\n\n\n\nMagnitude absoluta\n0,4264\n1\n\n\nlog(albedo)\n0,4137\n1\n\n\nVelocidade angular média\n0,2162\n1\n\n\nlog(distância mínima à Terra)\n0,0902\n1\n\n\nlog(tamanho da órbita)\n0,0669\n1\n\n\nObjeto próximo da Terra\n0,0334\n1\n\n\nClasse orbital\n0,0245\n2\n\n\nInclinação\n0,0005\n1\n\n\n\n\n\n\n\n\n\n\nFIV no bloco numérico\n\n\n\n\n\nVariável\nFIV\n\n\n\n\nlog(tamanho da órbita)\n18267,55\n\n\nlog(período orbital)\n18200,97\n\n\nlog(distância mínima à Terra)\n52,94\n\n\nExcentricidade\n15,29\n\n\nDistância do periélio\n14,27\n\n\nVelocidade angular média\n10,82\n\n\nDistância do afélio\n1,88\n\n\nlog(albedo)\n1,47\n\n\nMagnitude absoluta\n1,45\n\n\n\n\n\n\n\n\nVários elementos orbitais (tamanho, período, velocidade angular) são quase redundantes entre si — FIVs altíssimos. Somados à parcimônia dos critérios, isso aponta para um modelo enxuto com duas variáveis."
+    "section": "3.6 Multicolinearidade: remoção por FIV",
+    "text": "3.6 Multicolinearidade: remoção por FIV\n\n\n\nPasso 1 · retirar Tamanho da órbita\n\n\n\n\n\nVariável\n\n\nFIV\n\n\nDecisão\n\n\n\n\n\n\nTamanho da órbita\n\n\n1.254.145,83\n\n\nretirar\n\n\n\n\nDistância do afélio\n\n\n1.152.346,24\n\n\n\n\n\n\nDistância do periélio\n\n\n31.351,65\n\n\n\n\n\n\nDistância mínima à Terra\n\n\n231,90\n\n\n\n\n\n\nPeríodo orbital\n\n\n32,18\n\n\n\n\n\n\nExcentricidade\n\n\n2,95\n\n\n\n\n\n\nVelocidade angular\n\n\n2,64\n\n\n\n\n\n\nInclinação\n\n\n1,42\n\n\n\n\n\n\nAlbedo\n\n\n1,41\n\n\n\n\n\n\nMagnitude absoluta\n\n\n1,39\n\n\n\n\n\n\nOrientação\n\n\n1,00\n\n\n\n\n\n\n\n\n\nPasso 2 · retirar Distância do periélio\n\n\n\n\n\nVariável\n\n\nFIV\n\n\nDecisão\n\n\n\n\n\n\nDistância do periélio\n\n\n258,85\n\n\nretirar\n\n\n\n\nDistância mínima à Terra\n\n\n231,90\n\n\n\n\n\n\nDistância do afélio\n\n\n34,86\n\n\n\n\n\n\nPeríodo orbital\n\n\n32,18\n\n\n\n\n\n\nExcentricidade\n\n\n2,95\n\n\n\n\n\n\nVelocidade angular\n\n\n2,64\n\n\n\n\n\n\nInclinação\n\n\n1,42\n\n\n\n\n\n\nAlbedo\n\n\n1,41\n\n\n\n\n\n\nMagnitude absoluta\n\n\n1,39\n\n\n\n\n\n\nOrientação\n\n\n1,00\n\n\n\n\n\n\n\n\n\nPasso 3 · retirar Distância do afélio\n\n\n\n\n\nVariável\n\n\nFIV\n\n\nDecisão\n\n\n\n\n\n\nDistância do afélio\n\n\n34,00\n\n\nretirar\n\n\n\n\nPeríodo orbital\n\n\n31,56\n\n\n\n\n\n\nDistância mínima à Terra\n\n\n3,59\n\n\n\n\n\n\nExcentricidade\n\n\n2,35\n\n\n\n\n\n\nVelocidade angular\n\n\n2,08\n\n\n\n\n\n\nAlbedo\n\n\n1,40\n\n\n\n\n\n\nMagnitude absoluta\n\n\n1,39\n\n\n\n\n\n\nInclinação\n\n\n1,12\n\n\n\n\n\n\nOrientação\n\n\n1,00\n\n\n\n\n\n\n\n\n\nPasso 4 · FIV máximo ≤ 5\n\n\n\n\n\nVariável\n\n\nFIV\n\n\nDecisão\n\n\n\n\n\n\nDistância mínima à Terra\n\n\n2,75\n\n\n\n\n\n\nVelocidade angular\n\n\n2,05\n\n\n\n\n\n\nExcentricidade\n\n\n1,60\n\n\n\n\n\n\nAlbedo\n\n\n1,40\n\n\n\n\n\n\nMagnitude absoluta\n\n\n1,39\n\n\n\n\n\n\nInclinação\n\n\n1,12\n\n\n\n\n\n\nPeríodo orbital\n\n\n1,03\n\n\n\n\n\n\nOrientação\n\n\n1,00"
+  },
+  {
+    "objectID": "trabalho/index.html#box-cox-transformação-da-resposta",
+    "href": "trabalho/index.html#box-cox-transformação-da-resposta",
+    "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
+    "section": "4.1 Box-Cox: transformação da resposta",
+    "text": "4.1 Box-Cox: transformação da resposta\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nλ próximo de zero\n\nlog(diâmetro)"
+  },
+  {
+    "objectID": "trabalho/index.html#modelo-após-a-transformação",
+    "href": "trabalho/index.html#modelo-após-a-transformação",
+    "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
+    "section": "4.2 Modelo após a transformação",
+    "text": "4.2 Modelo após a transformação\n\n\nCall:\nlm(formula = reformulate(reduzido, \"log_diametro\"), data = df_modelo)\n\nResiduals:\n     Min       1Q   Median       3Q      Max \n-2.04400 -0.09644  0.00129  0.09163  2.58261 \n\nCoefficients:\n                           Estimate Std. Error   t value Pr(&gt;|t|)    \n(Intercept)               8.262e+00  7.021e-03  1176.637  &lt; 2e-16 ***\nmagnitude_absoluta       -4.196e-01  3.536e-04 -1186.568  &lt; 2e-16 ***\nalbedo                   -2.763e+00  4.610e-03  -599.424  &lt; 2e-16 ***\nexcentricidade_orbita    -3.574e-02  6.665e-03    -5.363 8.22e-08 ***\ninclinacao_orbita         1.804e-03  6.663e-05    27.079  &lt; 2e-16 ***\norientacao_orbita         1.932e-05  4.190e-06     4.611 4.02e-06 ***\nperiodo_orbita           -1.280e-07  3.944e-08    -3.245  0.00118 ** \nvel_media_angular_orbita -4.682e-01  1.036e-02   -45.189  &lt; 2e-16 ***\ndist_minima_terra         2.660e-02  1.378e-03    19.305  &lt; 2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 0.1599 on 138075 degrees of freedom\nMultiple R-squared:  0.9397,    Adjusted R-squared:  0.9397 \nF-statistic: 2.688e+05 on 8 and 138075 DF,  p-value: &lt; 2.2e-16\n\nAnalysis of Variance Table\n\nResponse: log_diametro\n                             Df Sum Sq Mean Sq    F value    Pr(&gt;F)    \nmagnitude_absoluta            1  41075   41075 1.6066e+06 &lt; 2.2e-16 ***\nalbedo                        1  13731   13731 5.3706e+05 &lt; 2.2e-16 ***\nexcentricidade_orbita         1     14      14 5.3121e+02 &lt; 2.2e-16 ***\ninclinacao_orbita             1     41      41 1.5899e+03 &lt; 2.2e-16 ***\norientacao_orbita             1      1       1 1.9988e+01 7.798e-06 ***\nperiodo_orbita                1      0       0 1.9336e+00    0.1644    \nvel_media_angular_orbita      1    112     112 4.3812e+03 &lt; 2.2e-16 ***\ndist_minima_terra             1     10      10 3.7270e+02 &lt; 2.2e-16 ***\nResiduals                138075   3530       0                         \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
+  },
+  {
+    "objectID": "trabalho/index.html#seleção-forward-por-ganho-de-r²-ajustado",
+    "href": "trabalho/index.html#seleção-forward-por-ganho-de-r²-ajustado",
+    "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
+    "section": "4.3 Seleção forward por ganho de R² ajustado",
+    "text": "4.3 Seleção forward por ganho de R² ajustado\n\n\n\n\n\nPasso\nVariável incluída\nR² ajustado\nGanho (p.p.)\nDecisão\n\n\n\n\n1\nMagnitude absoluta\n0,7020\n70,20\nmanter\n\n\n2\nAlbedo\n0,9367\n23,47\nmanter\n\n\n3\nVelocidade angular\n0,9390\n0,24\nparar antes\n\n\n4\nInclinação\n0,9393\n0,03\nparar antes\n\n\n5\nDistância mínima à Terra\n0,9396\n0,03\nparar antes\n\n\n6\nExcentricidade\n0,9397\n0,00\nparar antes\n\n\n7\nOrientação\n0,9397\n0,00\nparar antes\n\n\n8\nPeríodo orbital\n0,9397\n0,00\nparar antes"
+  },
+  {
+    "objectID": "trabalho/index.html#albedo-escala-original-ou-logarítmica",
+    "href": "trabalho/index.html#albedo-escala-original-ou-logarítmica",
+    "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
+    "section": "4.4 Albedo: escala original ou logarítmica?",
+    "text": "4.4 Albedo: escala original ou logarítmica?"
   },
   {
     "objectID": "trabalho/index.html#modelo-final-1",
     "href": "trabalho/index.html#modelo-final-1",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "4.1 Modelo final",
-    "text": "4.1 Modelo final\n\n\nlog(diâmetro) = β₀ + β₁ · magnitude absoluta + β₂ · log(albedo) + ε\n\n\n\n\n\nsummary(modelo)\n\n\nCall:\nlm(formula = log_diametro ~ magnitude_absoluta + log_albedo, \n    data = df_modelo)\n\nResiduals:\n     Min       1Q   Median       3Q      Max \n-1.84840 -0.05877  0.00263  0.06016  2.64256 \n\nCoefficients:\n                     Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)         7.2016509  0.0038729  1859.5   &lt;2e-16 ***\nmagnitude_absoluta -0.4452119  0.0002614 -1703.0   &lt;2e-16 ***\nlog_albedo         -0.4455924  0.0004886  -911.9   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 0.1341 on 138081 degrees of freedom\nMultiple R-squared:  0.9576,    Adjusted R-squared:  0.9576 \nF-statistic: 1.558e+06 on 2 and 138081 DF,  p-value: &lt; 2.2e-16\n\n\n\n\n\n\nanova(modelo)\n\nAnalysis of Variance Table\n\nResponse: log_diametro\n                       Df Sum Sq Mean Sq F value    Pr(&gt;F)    \nmagnitude_absoluta      1  41075   41075 2284143 &lt; 2.2e-16 ***\nlog_albedo              1  14955   14955  831607 &lt; 2.2e-16 ***\nResiduals          138081   2483       0                      \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
+    "section": "5.1 Modelo final",
+    "text": "5.1 Modelo final\n\n\nlog(diâmetro) = β₀ + β₁ · magnitude absoluta + β₂ · log(albedo) + ε\n\n\n\n\nCall:\nlm(formula = log_diametro ~ magnitude_absoluta + log_albedo, \n    data = df_modelo)\n\nResiduals:\n     Min       1Q   Median       3Q      Max \n-1.84840 -0.05877  0.00263  0.06016  2.64256 \n\nCoefficients:\n                     Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)         7.2016509  0.0038729  1859.5   &lt;2e-16 ***\nmagnitude_absoluta -0.4452119  0.0002614 -1703.0   &lt;2e-16 ***\nlog_albedo         -0.4455924  0.0004886  -911.9   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 0.1341 on 138081 degrees of freedom\nMultiple R-squared:  0.9576,    Adjusted R-squared:  0.9576 \nF-statistic: 1.558e+06 on 2 and 138081 DF,  p-value: &lt; 2.2e-16\n\n\n\n\nAnalysis of Variance Table\n\nResponse: log_diametro\n                       Df Sum Sq Mean Sq F value    Pr(&gt;F)    \nmagnitude_absoluta      1  41075   41075 2284143 &lt; 2.2e-16 ***\nlog_albedo              1  14955   14955  831607 &lt; 2.2e-16 ***\nResiduals          138081   2483       0                      \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
   },
   {
-    "objectID": "trabalho/index.html#modelo-final-interpretação",
-    "href": "trabalho/index.html#modelo-final-interpretação",
+    "objectID": "trabalho/index.html#diagnóstico-do-modelo-final",
+    "href": "trabalho/index.html#diagnóstico-do-modelo-final",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "4.2 Modelo final: interpretação",
-    "text": "4.2 Modelo final: interpretação\n\n\n\nAjuste\n\n\n0,9576R² ajustado\n\n\n1,08FIV máximo\n\n\n138.084 asteroides.\n\n\n\n\n\nCoeficientes\n\n\n\n\n\nTermo\nEstimativa\np-valor\n\n\n\n\nMagnitude absoluta\n-0,4452\n&lt; 0,001\n\n\nlog(albedo)\n-0,4456\n&lt; 0,001\n\n\n\n\n\nOs sinais são coerentes: objetos menos brilhantes (magnitude maior) tendem a ser menores; e, para um mesmo brilho, superfícies mais refletivas (albedo maior) indicam diâmetro menor.\n\n\n\nA seleção, guiada pelos dados, reencontra a relação astronômica clássica \\(D \\approx 1329 \\cdot 10^{-H/5} / \\sqrt{\\text{albedo}}\\) (Pravec & Harris, 2007; CNEOS/JPL) — sem partir dela."
+    "section": "5.2 Diagnóstico do modelo final",
+    "text": "5.2 Diagnóstico do modelo final"
   },
   {
-    "objectID": "trabalho/index.html#resíduos",
-    "href": "trabalho/index.html#resíduos",
+    "objectID": "trabalho/index.html#alavanca-e-influência-no-modelo-final",
+    "href": "trabalho/index.html#alavanca-e-influência-no-modelo-final",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "5.1 Resíduos",
-    "text": "5.1 Resíduos"
+    "section": "5.3 Alavanca e influência no modelo final",
+    "text": "5.3 Alavanca e influência no modelo final\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCritério\nObservações\n\n\n\n\n|resíduo studentizado| &gt; 3\n2.925\n\n\nLeverage acima do limite\n6.924\n\n\nCook acima do limite\n8.049"
   },
   {
-    "objectID": "trabalho/index.html#qq-plot",
-    "href": "trabalho/index.html#qq-plot",
+    "objectID": "trabalho/index.html#testes-dos-pressupostos",
+    "href": "trabalho/index.html#testes-dos-pressupostos",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "5.2 QQ-plot",
-    "text": "5.2 QQ-plot"
-  },
-  {
-    "objectID": "trabalho/index.html#alavanca-influência",
-    "href": "trabalho/index.html#alavanca-influência",
-    "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
-    "section": "5.3 Alavanca & influência",
-    "text": "5.3 Alavanca & influência"
+    "section": "5.4 Testes dos pressupostos",
+    "text": "5.4 Testes dos pressupostos\n\n\n\nPressuposto\nTeste\nHipótese nula\nEstatística\np-valor\nDecisão\n\n\n\n\nNormalidade\nKolmogorov–Smirnov\nResíduos seguem distribuição normal\n0,0957\n&lt; 0,001\nRejeitar H₀: resíduos não normais\n\n\nNormalidade\nShapiro–Wilk (n = 5.000)\nResíduos seguem distribuição normal\n0,8999\n&lt; 0,001\nRejeitar H₀: resíduos não normais\n\n\nHomogeneidade\nBreusch–Pagan\nVariância dos resíduos é constante\n2584,67\n&lt; 0,001\nRejeitar H₀: há heterocedasticidade\n\n\nHomogeneidade\nWhite\nVariância dos resíduos é constante\n4801,33\n&lt; 0,001\nRejeitar H₀: há heterocedasticidade\n\n\n\n\nOs testes e os gráficos concordam: o modelo é forte para explicação e previsão, mas normalidade e homogeneidade não são plenamente atendidas para inferência clássica estrita."
   },
   {
     "objectID": "trabalho/index.html#conclusão-1",
     "href": "trabalho/index.html#conclusão-1",
     "title": "Análise de Regressão sobre o Diâmetro de Asteroides",
     "section": "6.1 Conclusão",
-    "text": "6.1 Conclusão\n\nSim: na escala logarítmica, duas variáveis explicam cerca de 95,8% da variação do diâmetro entre os asteroides com dados completos. O ajuste é forte e a relação é interpretável — mas os resíduos lembram que a base reúne objetos muito diferentes.\n\n\n\n\nO que fica de pé\n\nResposta modelada: log(diâmetro).\nModelo escolhido pelos dados e por parcimônia.\nR² ajustado: 0,9576.\nFIV máximo: 1,08 (sem multicolinearidade).\nO resultado coincide com a relação astronômica conhecida.\n\n\n\n\n\n\nOnde ter cautela\n\nBreusch-Pagan: p-valor &lt; 0,001 (heterocedasticidade).\nShapiro-Wilk (amostra): p-valor &lt; 0,001.\nQQ-plot com caudas mais pesadas que a normal.\nDurbin-Watson: 1,792, sem ordem temporal real — interpretado com cautela.\nForte para previsão; limitado para inferência estrita."
+    "text": "6.1 Conclusão\n\nNa escala logarítmica, duas variáveis explicam cerca de 95,8% da variação do diâmetro entre os asteroides com dados completos.\n\n\n\n\nO que permanece\n\nO forward foi interrompido quando o ganho caiu abaixo de 1 ponto percentual.\nO modelo final é simples, parcimonioso e interpretável.\nO resultado recupera a relação astronômica conhecida sem partir dela.\nNão há multicolinearidade relevante no modelo final.\n\n\n\n\n\n\nOnde ter cautela\n\nOs resíduos não apresentam normalidade estrita.\nHá evidência de heterocedasticidade.\nA base é transversal; não há ordem temporal natural entre as linhas.\nPontos influentes representam asteroides reais e foram mantidos."
   },
   {
     "objectID": "index.html",
