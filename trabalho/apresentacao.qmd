@@ -830,6 +830,7 @@ aproximadamente `r fmt_num(100 * summary(modelo)$adj.r.squared, 1)`% da variaç�
 - Magnitude absoluta e albedo concentram quase todo o poder explicativo.
 - O resultado recupera uma relação astronômica conhecida sem partir dela.
 - Não há multicolinearidade relevante no modelo final.
+- Os pressupostos de normalidade dos resíduos, homocedasticidade e ausência de autocorrelação não foram validados — mesmo após diversas tentativas de adequação, como mínimos quadrados ponderados, regressão polinomial e remoção de pontos de alavanca e influência.
 
 :::
 
