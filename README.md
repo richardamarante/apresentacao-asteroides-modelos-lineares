@@ -1,6 +1,6 @@
 <div align="center">
 
-  <h1>☄️ Modelagem do Diâmetro de Asteroides</h1>
+  <h1>☄️ Modelagem do Diâmetro de Asteroides </h1>
 
   <p>
     Uma análise de regressão para investigar quais características físicas e orbitais<br>
