@@ -446,18 +446,18 @@ code.blue {
   min-height: 1.25em;
   margin-bottom: 0.30em;
   color: #7dd3fc;
-  font-size: 0.60em;
+  font-size: 0.66em;
   font-weight: 700;
   line-height: 1.18;
   text-align: center;
 }
 .reveal table.tabela-fiv {
-  font-size: 0.60em;
+  font-size: 0.72em;
   table-layout: fixed;
 }
 .reveal table.tabela-fiv th,
 .reveal table.tabela-fiv td {
-  padding: 7px 4px;
+  padding: 11px 5px;
   line-height: 1.08;
 }
 .reveal table.tabela-fiv th:nth-child(1),
@@ -466,14 +466,32 @@ code.blue {
 .reveal table.tabela-fiv td:nth-child(2) { width: 32%; text-align: right; }
 
 .reveal table.tabela-forward {
-  width: 72%;
-  margin: 0.8em auto 0;
-  font-size: 0.78em;
+  width: 88%;
+  margin: 0.25em auto 0;
+  font-size: 0.56em;
 }
 .reveal table.tabela-forward th,
 .reveal table.tabela-forward td {
-  padding: 10px 12px;
+  padding: 5px 9px;
 }
+.reveal table.tabela-forward-full {
+  width: 92%;
+  font-size: 0.72em;
+  margin: 1.2em auto 0;
+}
+.reveal table.tabela-forward-full th,
+.reveal table.tabela-forward-full td {
+  padding: 10px 14px;
+}
+.selecao-title {
+  width: 88%;
+  margin: 0 auto 0.15em;
+  color: #7dd3fc;
+  font-size: 0.64em;
+  font-weight: 700;
+  text-align: left;
+}
+.selecao-title-backward { margin-top: 0.48em; }
 .reveal table.tabela-testes {
   font-size: 0.64em;
 }
