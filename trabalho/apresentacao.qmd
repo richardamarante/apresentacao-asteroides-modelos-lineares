@@ -658,46 +658,6 @@ knitr::kable(
 )
 ```
 
-<div class="selecao-title selecao-title-backward">Backward</div>
-
-```{r}
-#| results: asis
-rotulos_backward <- c(
-  periodo_orbita = "Período orbital",
-  orientacao_orbita = "Orientação",
-  excentricidade_orbita = "Excentricidade",
-  dist_minima_terra = "Distância mínima à Terra",
-  inclinacao_orbita = "Inclinação",
-  vel_media_angular_orbita = "Velocidade angular"
-)
-
-atuais_backward <- reduzido
-linhas_backward <- list()
-while (length(atuais_backward) > 2) {
-  candidatos <- sapply(atuais_backward, function(v) {
-    formula_candidata <- reformulate(setdiff(atuais_backward, v), "log_diametro")
-    summary(lm(formula_candidata, data = df_modelo))$adj.r.squared
-  })
-  removida <- names(which.max(candidatos))
-  atuais_backward <- setdiff(atuais_backward, removida)
-  linhas_backward[[length(linhas_backward) + 1]] <- tibble(
-    Passo = length(linhas_backward) + 1,
-    `Variável retirada` = unname(rotulos_backward[removida]),
-    `R² ajustado` = max(candidatos)
-  )
-}
-
-backward_tab <- bind_rows(linhas_backward) |>
-  mutate(`R² ajustado` = fmt_num(`R² ajustado`, 4))
-
-knitr::kable(
-  backward_tab,
-  format = "html",
-  align = "clc",
-  table.attr = 'class="tabela-tema tabela-forward"'
-)
-```
-
 ## Albedo
 
 ```{r}
