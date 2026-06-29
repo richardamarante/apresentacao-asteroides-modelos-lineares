@@ -617,22 +617,19 @@ saida_pre(anova(modelo_reduzido), "output-anova-reduzido", "anova(modelo_transfo
 ::: {.column width="2%"}
 :::
 
-::: {.column width="58%"}
+::: {.column width="55%"}
 
 ```{r}
 #| fig-align: center
 #| out-width: "100%"
-#| fig-height: 2.5
-diag_cheio    <- diagnosticos_modelo(modelo_cheio, 7.2)
-diag_cheio$residuos + labs(title = "Antes: diâmetro")
-```
-
-```{r}
-#| fig-align: center
-#| out-width: "100%"
-#| fig-height: 2.5
-diag_reduzido <- diagnosticos_modelo(modelo_reduzido, 7.7)
-diag_reduzido$residuos + labs(title = "Depois: log(diâmetro)")
+#| fig-height: 5.2
+diag_cheio    <- diagnosticos_modelo(modelo_cheio, 8)
+diag_reduzido <- diagnosticos_modelo(modelo_reduzido, 8)
+gridExtra::grid.arrange(
+  diag_cheio$residuos    + labs(title = "Antes: diâmetro"),
+  diag_reduzido$residuos + labs(title = "Depois: log(diâmetro)"),
+  ncol = 1
+)
 ```
 
 :::
