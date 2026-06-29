@@ -4,14 +4,14 @@
 
   <p>
     Modelagem estatística para investigar quais características físicas e orbitais<br>
-    explicam o diâmetro observado de asteroides.
+    explicam o diâmetro de asteroides.
   </p>
 
   <a href="https://richardamarante.github.io/apresentacao-asteroides-modelos-lineares/trabalho/index.html#/title-slide">
-    <img src="https://img.shields.io/badge/▶  Ver%20Apresentação-38BDF8?style=for-the-badge&logoColor=black" alt="Ver Apresentação"/>
+    <img src="https://img.shields.io/badge/▶  Apresentação-38BDF8?style=for-the-badge&logoColor=black" alt="Apresentação"/>
   </a>
 
-  <br/><br/>
+  <br/>
 
   <img src="https://img.shields.io/badge/R-276DC3?style=flat-square&logo=r&logoColor=white"/>
   <img src="https://img.shields.io/badge/Quarto-75AADB?style=flat-square&logo=quarto&logoColor=white"/>
@@ -22,7 +22,6 @@
 ---
 
 Trabalho desenvolvido para a disciplina **Modelos de Regressão** da Universidade Federal Fluminense.
-A base de dados é composta por **1.552.892 asteroides** obtidos a partir do **JPL Small-Body Database**,
-e a variável resposta analisada é o `diâmetro_km`.
+A base de dados é composta por **1.552.892 asteroides** obtidos a partir do **NASA JPL Small-Body Database**.
 
-**Autor:** Richard Amarante
+**Autor:** Richard Amarante Melo — `richardmelo@id.uff.br`
