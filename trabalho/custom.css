@@ -106,7 +106,7 @@
       rgba(8, 22, 40, 0.78),
       rgba(14, 116, 144, 0.50)
     ),
-    url("media/transicao_asteroides.jpg");
+    url("media/transicao_asteroides.png");
   background-size: cover;
   background-position: center;
   color: #f8fbff;
@@ -200,7 +200,7 @@
       rgba(8, 22, 40, 0.52),
       rgba(14, 116, 144, 0.28)
     ),
-    url("media/final_asteroides.jpg");
+    url("media/final_asteroides.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

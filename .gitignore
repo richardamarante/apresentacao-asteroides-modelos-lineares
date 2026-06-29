@@ -1,3 +1,8 @@
 /.quarto/
 **/*.quarto_ipynb
 /tmp_screenshots/
+
+# Base bruta do JPL (~139 MB) excede o limite de 100 MB do GitHub.
+# A apresentacao usa o asteroides_modelo.rds (versionado); o CSV bruto
+# fica apenas local e e usado pelo scripts/preparar_dados_jpl.R.
+trabalho/data/dataset_asteroides.csv

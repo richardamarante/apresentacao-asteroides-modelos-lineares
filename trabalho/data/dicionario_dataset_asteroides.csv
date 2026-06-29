@@ -1,0 +1,17 @@
+﻿variável,unidade de medida,o que significa,observação
+nome_asteroide,-,Identificação completa do asteroide.,
+classe_orbita,-,"Classe orbital do asteroide, calculada a partir das características de sua órbita.","São muitas classes (13, ao todo), mas, basicamente, elas indicam onde o asteroide fica localizado no Sistema Solar e se a órbita dele cruza ou chega perto do caminho da Terra."
+neo,sim/nao,Indica se o asteroide é um objeto próximo da Terra (Near-Earth Object).,"Para asteroides, corresponde em geral a uma distância de periélio menor que 1,3 UA."
+pha,sim/nao,Indica se o asteroide é classificado como potencialmente perigoso.,"dist_minima_terra <= 0,05 UA (ou seja, cerca de 20x a distância da Terra à Lua, ou 1/5 da distância da Terra até Vênus) e magnitude_absoluta menor ou igual a 22 (que seria algo em torno de 140 metros, um pouco maior que o comprimento de um campo de futebol ou a altura exata da grande pirâmide de gizé)."
+diametro,km,Diâmetro efetivo do asteroide quando aproximado por uma esfera equivalente.,
+magnitude_absoluta,mag,"Medida de brilho real do asteroide, onde valores menores indicam objetos com maior luminosidade.",
+albedo,adimensional (0-1),Capacidade da superfície do asteroide de refletir luz.,"Valores baixos indicam superfície escuras, enquanto valores maiores representam superfícies mais refletoras (e provavelmente maiores)."
+excentricidade_orbita,adimensional (0-1),Mede o alongamento da órbita do asteroide.,"Perto de zero seria um círculo perfeito e quanto mais perto de um, mais perto de uma elipse perfeita."
+tamanho_orbita,UA,Representa o tamanho geral da órbita do asteroide por meio do semi-eixo maior.,UA significa unidade astronômica (distância média entre a Terra e o Sol).
+distancia_perielio,UA,Menor distância da órbita do asteroide até o Sol.,
+distancia_afelio,UA,Maior distância da órbita do asteroide até o Sol.,
+inclinacao_orbita,Graus,Inclinação do plano orbital em relação ao plano de referência do Sistema Solar.,
+orientacao_orbita,Graus,"Orientação do plano da órbita ao redor do Sol, através de sua posição orbital no espaço.",
+periodo_orbita,Dias,Tempo necessário para o asteroide completar uma órbita ao redor do Sol.,
+vel_media_angular_orbita,Graus/dia,Velocidade angular média com que o asteroide percorre sua órbita.,
+dist_minima_terra,UA,Menor distância geométrica possível entre a órbita da Terra e a órbita do asteroide.,

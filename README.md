@@ -21,7 +21,7 @@
 
 ---
 
-Trabalho desenvolvido para a disciplina **Modelos de Regressão** da Universidade Federal Fluminense.
+Trabalho desenvolvido para a disciplina **Modelos Lineares I** da Universidade Federal Fluminense.
 A base de dados é composta por **1.552.892 asteroides** obtidos a partir do **NASA JPL Small-Body Database**.
 
 **Autor:** Richard Amarante Melo — `richardmelo@id.uff.br`
