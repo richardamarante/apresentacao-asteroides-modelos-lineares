@@ -388,20 +388,45 @@ code.blue {
 .output-anova-final {
   margin: 0 0 0.38em;
   padding: 0.48em 0.62em;
-  overflow: hidden;
+  overflow: auto;
   white-space: pre;
   color: #dbeafe;
   background: #071323;
   border: 1px solid rgba(56, 189, 248, 0.42);
   border-radius: 6px;
   line-height: 1.18;
+  scrollbar-gutter: stable;
 }
-.output-modelo-cheio { font-size: 0.31em; }
-.output-anova-cheio { font-size: 0.27em; }
-.output-modelo-reduzido { font-size: 0.30em; }
-.output-anova-reduzido { font-size: 0.27em; }
-.output-modelo-final { font-size: 0.48em; }
-.output-anova-final { font-size: 0.43em; }
+.output-modelo-cheio::-webkit-scrollbar,
+.output-anova-cheio::-webkit-scrollbar,
+.output-modelo-reduzido::-webkit-scrollbar,
+.output-anova-reduzido::-webkit-scrollbar,
+.output-modelo-final::-webkit-scrollbar,
+.output-anova-final::-webkit-scrollbar { width: 7px; height: 7px; }
+.output-modelo-cheio::-webkit-scrollbar-thumb,
+.output-anova-cheio::-webkit-scrollbar-thumb,
+.output-modelo-reduzido::-webkit-scrollbar-thumb,
+.output-anova-reduzido::-webkit-scrollbar-thumb,
+.output-modelo-final::-webkit-scrollbar-thumb,
+.output-anova-final::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 5px; }
+.output-label {
+  margin: 0;
+  padding: 0.28em 0.7em;
+  color: #93c5fd;
+  background: #0b1728;
+  border: 1px solid rgba(56, 189, 248, 0.42);
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  font-family: monospace;
+  font-size: 0.42em;
+}
+.output-label + pre { border-radius: 0 0 6px 6px; }
+.output-modelo-cheio { font-size: 0.39em; max-height: 285px; }
+.output-anova-cheio { font-size: 0.36em; max-height: 205px; }
+.output-modelo-reduzido { font-size: 0.38em; max-height: 270px; }
+.output-anova-reduzido { font-size: 0.35em; max-height: 205px; }
+.output-modelo-final { font-size: 0.51em; max-height: 310px; }
+.output-anova-final { font-size: 0.47em; max-height: 240px; }
 
 /* ===== Quatro etapas de FIV no mesmo slide ===== */
 .fiv-grid {
@@ -418,16 +443,16 @@ code.blue {
   border-radius: 7px;
 }
 .fiv-title {
-  min-height: 2.35em;
+  min-height: 1.25em;
   margin-bottom: 0.30em;
   color: #7dd3fc;
-  font-size: 0.48em;
+  font-size: 0.60em;
   font-weight: 700;
   line-height: 1.18;
   text-align: center;
 }
 .reveal table.tabela-fiv {
-  font-size: 0.53em;
+  font-size: 0.60em;
   table-layout: fixed;
 }
 .reveal table.tabela-fiv th,
@@ -436,18 +461,18 @@ code.blue {
   line-height: 1.08;
 }
 .reveal table.tabela-fiv th:nth-child(1),
-.reveal table.tabela-fiv td:nth-child(1) { width: 57%; }
+.reveal table.tabela-fiv td:nth-child(1) { width: 68%; }
 .reveal table.tabela-fiv th:nth-child(2),
-.reveal table.tabela-fiv td:nth-child(2) { width: 25%; text-align: right; }
-.reveal table.tabela-fiv th:nth-child(3),
-.reveal table.tabela-fiv td:nth-child(3) { width: 18%; color: #fca5a5; }
+.reveal table.tabela-fiv td:nth-child(2) { width: 32%; text-align: right; }
 
 .reveal table.tabela-forward {
-  font-size: 0.61em;
+  width: 72%;
+  margin: 0.8em auto 0;
+  font-size: 0.78em;
 }
 .reveal table.tabela-forward th,
 .reveal table.tabela-forward td {
-  padding: 8px 6px;
+  padding: 10px 12px;
 }
 .reveal table.tabela-testes {
   font-size: 0.64em;
@@ -462,19 +487,24 @@ code.blue {
   font-size: 0.54em;
 }
 
-/* Dicionário completo em um único quadro, sem exigir rolagem durante a fala. */
-.reveal table.tabela-dicionario {
-  font-size: 0.39em;
+/* Dicionário rolável, legível e com largura útil para a descrição. */
+.reveal table.tabela-dicionario-rolavel {
+  font-size: 0.56em;
   table-layout: fixed;
 }
-.reveal table.tabela-dicionario th,
-.reveal table.tabela-dicionario td {
-  padding: 3px 5px;
-  line-height: 1.05;
+.reveal table.tabela-dicionario-rolavel th,
+.reveal table.tabela-dicionario-rolavel td {
+  padding: 6px 7px;
+  line-height: 1.12;
 }
-.reveal table.tabela-dicionario th:nth-child(1),
-.reveal table.tabela-dicionario td:nth-child(1) { width: 31%; }
-.reveal table.tabela-dicionario th:nth-child(2),
-.reveal table.tabela-dicionario td:nth-child(2) { width: 22%; }
-.reveal table.tabela-dicionario th:nth-child(3),
-.reveal table.tabela-dicionario td:nth-child(3) { width: 47%; }
+.reveal table.tabela-dicionario-rolavel th:nth-child(1),
+.reveal table.tabela-dicionario-rolavel td:nth-child(1) { width: 31%; }
+.reveal table.tabela-dicionario-rolavel th:nth-child(2),
+.reveal table.tabela-dicionario-rolavel td:nth-child(2) { width: 20%; }
+.reveal table.tabela-dicionario-rolavel th:nth-child(3),
+.reveal table.tabela-dicionario-rolavel td:nth-child(3) { width: 49%; }
+.reveal table.tabela-dicionario-rolavel tbody {
+  max-height: 390px;
+  overflow-y: scroll !important;
+  scrollbar-gutter: stable;
+}
